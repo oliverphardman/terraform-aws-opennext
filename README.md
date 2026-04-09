@@ -6,6 +6,32 @@ Simply use [Terraform](https://developer.hashicorp.com/terraform) to define any 
 
 This module is based on the excellent work by [NHS England](https://github.com/orgs/nhsengland) on [terraform-aws-opennext](https://github.com/nhs-england-tools/terraform-aws-opennext). Their module has not been maintained for a long time, but **Terranext supports v6 of the AWS Terraform provider**, utilizes new features in AWS services and is far simpler to use.
 
+## Quick start
+1. Build your app with OpenNext
+`npx @opennextjs/aws@latest build`
+2. Include the Terranext module with the required variables.
+```hcl
+module "terranext" {
+  source = "path/to/terranext"
+
+  name               = "My Website"
+  slug               = "my-website"
+  aws_region         = "eu-west-1"
+  opennext_build_path = ".open-next"
+
+  deployment_domain = "example.com"
+  acm_arn           = aws_acm_certificate.cert.arn
+  hosted_zone_id    = data.aws_route53_zone.main.zone_id
+  waf_arn           = aws_wafv2_web_acl.main.arn
+
+  runtime_environment_variables = {
+    DATABASE_URL = var.database_url
+    IMAGE_RESOLUTION = var.image_resolution
+  }
+}
+```
+> Terraform can't access artifacts in directories parent to where it is being executed. Make sure your OpenNext build is somewhere accessible by Terraform, or use the [chdir](https://developer.hashicorp.com/terraform/cli/commands#switching-working-directory-with-chdir) option to run Terraform from somewhere else.
+
 ## Architecture
 
 ![OpenNext AWS default recommended architecture](https://opennext.js.org/architecture.png)
@@ -31,23 +57,6 @@ Terranext provides full coverage of the [OpenNext recommended AWS architecture](
 - AWS provider ~> 6.2
 - An [OpenNext](https://opennext.js.org/) build output directory (run `npx open-next build` in your Next.js project)
 - An ACM certificate in `us-east-1` for your domain (required by CloudFront)
-
-## Usage
-
-```hcl
-module "nextjs" {
-  source = "path/to/terranext"
-
-  name               = "My Website"
-  slug               = "my-website"
-  aws_region         = "eu-west-1"
-  opennext_build_path = ".open-next"
-  deployment_domain  = "example.com"
-  acm_arn            = "arn:aws:acm:us-east-1:123456789012:certificate/abc-123"
-}
-```
-
-This is all you need for a working deployment. Terranext handles the rest.
 
 ## Variables
 
@@ -82,32 +91,6 @@ This is all you need for a working deployment. Terranext handles the rest.
 | `cloudfront_distribution_domain_name` | The domain name of the CloudFront distribution |
 
 CloudFront automatically serves both `example.com` and `www.example.com`, redirecting `www` to the apex domain. You can disable this behavior by setting `enable_www_alias` to `false`.
-
-# Quick start
-1. Build your app with OpenNext
-`npx @opennextjs/aws@latest build`
-2. Include the Terranext module with the required variables.
-```hcl
-module "terranext" {
-  source = "path/to/terranext"
-
-  name               = "My Website"
-  slug               = "my-website"
-  aws_region         = "eu-west-1"
-  opennext_build_path = ".open-next"
-
-  deployment_domain = "example.com"
-  acm_arn           = aws_acm_certificate.cert.arn
-  hosted_zone_id    = data.aws_route53_zone.main.zone_id
-  waf_arn           = aws_wafv2_web_acl.main.arn
-
-  runtime_environment_variables = {
-    DATABASE_URL = var.database_url
-    IMAGE_RESOLUTION = var.image_resolution
-  }
-}
-```
-> Terraform can't access artifacts in directories parent to where it is being executed. Make sure your OpenNext build is somewhere accessible by Terraform, or use the [chdir](https://developer.hashicorp.com/terraform/cli/commands#switching-working-directory-with-chdir) option to run Terraform from somewhere else.
 
 ## How it works
 
