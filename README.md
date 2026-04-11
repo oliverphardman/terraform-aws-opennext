@@ -1,6 +1,6 @@
 # Terranext
 
-Terranext makes it easy for you to host your Next.js app on AWS without breaking the bank on compute.
+Terranext is an opinionated Terraform module designed to make it easy for you to host your Next.js app on AWS, without breaking the bank on compute.
 
 Simply use [Terraform](https://developer.hashicorp.com/terraform) to define any supporting infrastructure you require, such as your domain or WAF configuration, then include the Terranext module to get started. Build your app using [OpenNext](https://opennext.js.org/) and Terraform will spin up the cloud resources you need to host it.
 
@@ -16,18 +16,12 @@ module "terranext" {
 
   name               = "My Website"
   slug               = "my-website"
-  aws_region         = "eu-west-1"
+  aws_region         = "us-east-1"
   opennext_build_path = ".open-next"
 
   deployment_domain = "example.com"
   acm_arn           = aws_acm_certificate.cert.arn
   hosted_zone_id    = data.aws_route53_zone.main.zone_id
-  waf_arn           = aws_wafv2_web_acl.main.arn
-
-  runtime_environment_variables = {
-    DATABASE_URL = var.database_url
-    IMAGE_RESOLUTION = var.image_resolution
-  }
 }
 ```
 > Terraform can't access artifacts in directories parent to where it is being executed. Make sure your OpenNext build is somewhere accessible by Terraform, or use the [chdir](https://developer.hashicorp.com/terraform/cli/commands#switching-working-directory-with-chdir) option to run Terraform from somewhere else.
@@ -46,8 +40,8 @@ Terranext provides full coverage of the [OpenNext recommended AWS architecture](
 | Image Optimization Function | Core | ARM64 Lambda with Function URL. Routes `/_next/image*` |
 | Revalidation Queue | ISR Revalidation | SQS FIFO queue with KMS encryption and content-based deduplication |
 | Revalidation Function | ISR Revalidation | ARM64 Lambda triggered by SQS. Updates cache in S3 and DynamoDB |
-| Cache Files | ISR Revalidation | Stored in the same S3 assets bucket under the `cache` prefix |
-| Tag-to-Path Mapping | ISR Revalidation | DynamoDB table mapping revalidation tags to paths |
+| Cache Files | ISR Revalidation | Stored in the same S3 assets bucket under the `_cache` prefix |
+| Cache Table | ISR Revalidation | DynamoDB table storing cache metadata and tag-to-path mappings, seeded at deploy time |
 | Warmer Function | Warmer (optional) | ARM64 Lambda invoked every 5 minutes by EventBridge to keep the server function warm |
 | Route 53 | DNS (optional) | A and AAAA alias records for your custom domain and `www` subdomain |
 
@@ -82,6 +76,8 @@ Terranext provides full coverage of the [OpenNext recommended AWS architecture](
 | `use_account_regional_buckets` | `bool` | `true` | Use account-regional S3 namespace to avoid global naming conflicts |
 | `static_paths` | `list(string)` | `["/favicon.ico", ...]` | Static asset paths to cache via CloudFront |
 | `static_asset_cache_config` | `string` | `"public,max-age=0,..."` | Cache-Control header for static assets |
+| `server_streaming` | `bool` | `false` | Enable response streaming on the server function for faster TTFB |
+| `enable_www_alias` | `bool` | `true` | Create an additional `www` alias and redirect to the apex domain |
 
 ## Outputs
 
@@ -90,7 +86,7 @@ Terranext provides full coverage of the [OpenNext recommended AWS architecture](
 | `cloudfront_distribution_id` | The ID of the CloudFront distribution |
 | `cloudfront_distribution_domain_name` | The domain name of the CloudFront distribution |
 
-CloudFront automatically serves both `example.com` and `www.example.com`, redirecting `www` to the apex domain. You can disable this behavior by setting `enable_www_alias` to `false`.
+CloudFront automatically serves both `example.com` and `www.example.com`, redirecting `www` to the apex domain. You can disable this behaviour by setting `enable_www_alias` to `false`.
 
 ## How it works
 
