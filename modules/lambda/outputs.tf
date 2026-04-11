@@ -1,19 +1,24 @@
 output "lambda_function" {
-  value = aws_lambda_function.this
+  description = "The Lambda function resource"
+  value       = aws_lambda_function.this
 }
 
 output "lambda_function_url" {
-  value = aws_lambda_function_url.this
+  description = "The Lambda Function URL resource"
+  value       = aws_lambda_function_url.this
 }
 
 output "cloudfront_origin_access_control" {
-  value = aws_cloudfront_origin_access_control.this
+  description = "The CloudFront Origin Access Control for the Lambda Function URL"
+  value       = aws_cloudfront_origin_access_control.this
 }
 
 output "lambda_role" {
-  value = aws_iam_role.this
+  description = "The IAM role attached to the Lambda function"
+  value       = aws_iam_role.this
 }
 
 output "log_group" {
-  value = aws_cloudwatch_log_group.this
+  description = "The CloudWatch log group for the Lambda function"
+  value       = aws_cloudwatch_log_group.this
 }

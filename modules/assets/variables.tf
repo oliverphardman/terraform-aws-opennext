@@ -30,6 +30,7 @@ variable "static_asset_cache_config" {
 }
 
 variable "logging_config" {
+  description = "S3 access logging configuration. When set, access logs are written to the specified bucket and prefix."
   type = object({
     target_bucket = string
     target_prefix = string

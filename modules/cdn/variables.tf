@@ -19,7 +19,8 @@ variable "aws_region" {
 }
 
 variable "acm_certificate_arn" {
-  type = string
+  description = "The ARN of the ACM certificate for the CloudFront distribution"
+  type        = string
 }
 
 variable "price_class" {
@@ -129,6 +130,7 @@ variable "custom_waf" {
 }
 
 variable "origin_request_policy" {
+  description = "Custom origin request policy for the CloudFront distribution. When null, the managed AllViewerExceptHostHeader policy is used."
   type = object({
     cookies_config = object({
       cookie_behavior = string

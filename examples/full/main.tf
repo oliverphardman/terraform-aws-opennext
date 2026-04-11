@@ -89,7 +89,8 @@ resource "aws_wafv2_web_acl" "this" {
 # Terranext
 
 module "terranext" {
-  source = "./modules/terranext"
+  source  = "oliverphardman/terranext/aws"
+  version = "~> 1.0"
 
   name                = "My Website"
   slug                = "my-website"
