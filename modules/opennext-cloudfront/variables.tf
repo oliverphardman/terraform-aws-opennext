@@ -76,12 +76,6 @@ variable "aliases" {
   description = "The aliases (domain names) to be used for the Next.js application"
 }
 
-variable "enable_www_alias" {
-  type        = bool
-  description = "Whether to create an additional alias with the www prefix (e.g. www.example.com) and a corresponding Route 53 record if hosted_zone_id is provided."
-  default     = true
-}
-
 variable "custom_headers" {
   type = list(object({
     header   = string

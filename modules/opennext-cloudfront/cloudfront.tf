@@ -5,13 +5,11 @@ locals {
 }
 
 resource "aws_cloudfront_function" "this" {
-  count = var.enable_www_alias == true ? 1 : 0
-
-  name    = "${var.slug}PreserveHost"
+  name    = "${var.slug}HostHeader"
   runtime = "cloudfront-js-2.0"
-  comment = "Next.js function for preserving original host and redirecting www"
+  comment = "Sets x-forwarded-host header required by OpenNext"
   publish = true
-  code    = file("${path.module}/www_redirect.js")
+  code    = file("${path.module}/host_header.js")
 
   lifecycle {
     create_before_destroy = true
@@ -301,6 +299,11 @@ resource "aws_cloudfront_distribution" "this" {
 
     compress               = true
     viewer_protocol_policy = "redirect-to-https"
+
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.this.arn
+    }
   }
 
   ordered_cache_behavior {
@@ -319,13 +322,9 @@ resource "aws_cloudfront_distribution" "this" {
     compress               = true
     viewer_protocol_policy = "redirect-to-https"
 
-    dynamic "function_association" {
-      for_each = var.enable_www_alias == true ? [true] : []
-
-      content {
-        event_type   = "viewer-request"
-        function_arn = aws_cloudfront_function.this.arn
-      }
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.this.arn
     }
   }
 
@@ -396,14 +395,9 @@ resource "aws_cloudfront_distribution" "this" {
     compress               = true
     viewer_protocol_policy = "redirect-to-https"
 
-    dynamic "function_association" {
-      for_each = var.enable_www_alias == true ? [true] : []
-
-      content {
-        event_type   = "viewer-request"
-        function_arn = aws_cloudfront_function.this.arn
-      }
-
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.this.arn
     }
   }
 

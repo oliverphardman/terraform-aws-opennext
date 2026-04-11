@@ -181,8 +181,7 @@ module "cloudfront" {
   aws_region     = var.aws_region
 
   name                            = var.name
-  aliases                         = [var.deployment_domain, "www.${var.deployment_domain}"]
-  enable_www_alias                = var.enable_www_alias
+  aliases                         = var.enable_www_alias ? [var.deployment_domain, "www.${var.deployment_domain}"] : [var.deployment_domain]
   acm_certificate_arn             = var.acm_arn
   assets_paths                    = var.static_paths
   custom_waf                      = var.waf_arn != null ? { arn = var.waf_arn } : null
