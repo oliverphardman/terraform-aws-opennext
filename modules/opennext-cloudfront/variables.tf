@@ -180,7 +180,7 @@ variable "cache_policy" {
     enable_accept_encoding_brotli = true
     enable_accept_encoding_gzip   = true
     cookies_config = {
-      cookie_behavior = "all"
+      cookie_behavior = "none"
       items           = []
     }
     headers_config = {

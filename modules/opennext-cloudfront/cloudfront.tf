@@ -100,7 +100,7 @@ resource "aws_cloudfront_origin_request_policy" "this" {
 
     headers {
       items = concat(
-        ["accept", "rsc", "next-router-prefetch", "next-router-state-tree", "x-prerender-revalidate"],
+        ["accept", "rsc", "next-router-prefetch", "next-router-state-tree", "next-url", "x-prerender-revalidate"],
         coalesce(var.origin_request_policy.headers_config.items, [])
       )
     }
@@ -142,7 +142,7 @@ resource "aws_cloudfront_cache_policy" "this" {
 
       headers {
         items = concat(
-          ["accept", "rsc", "next-router-prefetch", "next-router-state-tree", "x-prerender-revalidate"],
+          ["accept", "rsc", "next-router-prefetch", "next-router-state-tree", "next-url", "x-prerender-revalidate"],
           coalesce(var.cache_policy.headers_config.items, [])
         )
       }
