@@ -51,12 +51,3 @@ resource "aws_cloudfront_origin_access_control" "this" {
   signing_protocol                  = "sigv4"
 }
 
-resource "aws_lambda_permission" "this" {
-  count = var.create_eventbridge_scheduled_rule ? 1 : 0
-
-  statement_id  = "AllowExecutionFromEventbridge"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.this.function_name
-  principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.this[0].arn
-}

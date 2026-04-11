@@ -71,15 +71,4 @@ variable "streaming" {
   default     = false
 }
 
-variable "create_eventbridge_scheduled_rule" {
-  type        = bool
-  description = "Toggle to create a scheduled rule in EventBridge to invoke the Lambda function"
-  default     = false
-}
-
-variable "warmer_schedule_expression" {
-  type        = string
-  description = "The schedule expression of the warm Lambda trigger rule (if enabled)"
-  default     = "rate(5 minutes)"
-}
 

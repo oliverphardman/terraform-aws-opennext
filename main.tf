@@ -12,9 +12,43 @@ module "assets" {
   static_asset_cache_config = var.static_asset_cache_config
 }
 
-module "cache_table" {
-  source = "./modules/opennext-cache-table"
-  slug   = var.slug
+resource "aws_dynamodb_table" "cache" {
+  name         = "${var.slug}Cache"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "tag"
+  range_key    = "path"
+
+  attribute {
+    name = "tag"
+    type = "S"
+  }
+
+  attribute {
+    name = "path"
+    type = "S"
+  }
+
+  global_secondary_index {
+    name = "revalidate"
+    key_schema {
+      attribute_name = "path"
+      key_type       = "HASH"
+    }
+    key_schema {
+      attribute_name = "revalidatedAt"
+      key_type       = "RANGE"
+    }
+    projection_type = "ALL"
+  }
+
+  ttl {
+    attribute_name = "revalidatedAt"
+    enabled        = true
+  }
+
+  point_in_time_recovery {
+    enabled = true
+  }
 }
 
 module "revalidation_seeder" {
@@ -23,8 +57,8 @@ module "revalidation_seeder" {
   slug       = var.slug
   source_dir = "${local.opennext_abs_path}/dynamodb-provider"
   output_dir = "${local.opennext_abs_path}/.build/"
-  table_name = module.cache_table.table_name
-  table_arn  = module.cache_table.table_arn
+  table_name = aws_dynamodb_table.cache.name
+  table_arn  = aws_dynamodb_table.cache.arn
 }
 
 module "server_function" {
@@ -42,7 +76,7 @@ module "server_function" {
     CACHE_BUCKET_NAME         = module.assets.assets_bucket.bucket
     CACHE_BUCKET_KEY_PREFIX   = "_cache"
     CACHE_BUCKET_REGION       = var.aws_region
-    CACHE_DYNAMO_TABLE        = module.cache_table.table_name
+    CACHE_DYNAMO_TABLE        = aws_dynamodb_table.cache.name
     REVALIDATION_QUEUE_URL    = module.revalidation_queue.queue.url
     REVALIDATION_QUEUE_REGION = var.aws_region
   }, var.runtime_environment_variables)
@@ -66,7 +100,7 @@ module "server_function" {
     {
       effect    = "Allow"
       actions   = ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem", "dynamodb:Query", "dynamodb:Scan", "dynamodb:BatchWriteItem"]
-      resources = [module.cache_table.table_arn, "${module.cache_table.table_arn}/index/*"]
+      resources = [aws_dynamodb_table.cache.arn, "${aws_dynamodb_table.cache.arn}/index/*"]
     }
   ]
 }
@@ -109,9 +143,9 @@ module "revalidation_function" {
 
   environment_variables = {
     CACHE_BUCKET_NAME       = module.assets.assets_bucket.bucket
-    CACHE_BUCKET_KEY_PREFIX = "cache"
+    CACHE_BUCKET_KEY_PREFIX = "_cache"
     CACHE_BUCKET_REGION     = var.aws_region
-    CACHE_DYNAMO_TABLE      = module.cache_table.table_name
+    CACHE_DYNAMO_TABLE      = aws_dynamodb_table.cache.name
   }
 
   iam_policy_statements = [
@@ -133,7 +167,7 @@ module "revalidation_function" {
     {
       effect    = "Allow"
       actions   = ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem", "dynamodb:Query", "dynamodb:BatchWriteItem"]
-      resources = [module.cache_table.table_arn, "${module.cache_table.table_arn}/index/*"]
+      resources = [aws_dynamodb_table.cache.arn, "${aws_dynamodb_table.cache.arn}/index/*"]
     }
   ]
 }
@@ -151,11 +185,11 @@ module "warmer_function" {
   count  = var.warmer_function_enabled ? 1 : 0
   source = "./modules/opennext-lambda"
 
-  slug                              = "${var.slug}-nextjs-warmer"
-  description                       = "Next.js Warmer Function"
-  memory_size                       = 128
-  reserved_concurrent_executions    = 3
-  create_eventbridge_scheduled_rule = true
+  slug        = "${var.slug}-nextjs-warmer"
+  description = "Next.js Warmer Function"
+  memory_size = 128
+
+  reserved_concurrent_executions = 3
 
   source_dir = "${local.opennext_abs_path}/warmer-function/"
   output_dir = "${local.opennext_abs_path}/.build/"
@@ -172,6 +206,30 @@ module "warmer_function" {
       resources = [module.server_function.lambda_function.arn]
     }
   ]
+}
+
+resource "aws_cloudwatch_event_rule" "warmer" {
+  count = var.warmer_function_enabled ? 1 : 0
+
+  name                = "${var.slug}WarmerScheduledRule"
+  schedule_expression = "rate(5 minutes)"
+}
+
+resource "aws_cloudwatch_event_target" "warmer" {
+  count = var.warmer_function_enabled ? 1 : 0
+
+  arn  = module.warmer_function[0].lambda_function.arn
+  rule = aws_cloudwatch_event_rule.warmer[0].name
+}
+
+resource "aws_lambda_permission" "warmer" {
+  count = var.warmer_function_enabled ? 1 : 0
+
+  statement_id  = "AllowExecutionFromEventBridge"
+  action        = "lambda:InvokeFunction"
+  function_name = module.warmer_function[0].lambda_function.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.warmer[0].arn
 }
 
 module "cloudfront" {

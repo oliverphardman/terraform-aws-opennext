@@ -10,14 +10,6 @@ output "cloudfront_origin_access_control" {
   value = aws_cloudfront_origin_access_control.this
 }
 
-output "cloudwatch_event_rule" {
-  value = try(aws_cloudwatch_event_rule.this[0], null)
-}
-
-output "cloudwatch_event_target" {
-  value = try(aws_cloudwatch_event_target.this[0], null)
-}
-
 output "lambda_role" {
   value = aws_iam_role.this
 }
