@@ -6,6 +6,7 @@ resource "aws_sqs_queue" "this" {
   name                              = "${var.slug}-isr-revalidation.fifo"
   fifo_queue                        = true
   content_based_deduplication       = true
+  receive_wait_time_seconds         = 20
   kms_master_key_id                 = local.kms_key_arn
   kms_data_key_reuse_period_seconds = 300
 }
