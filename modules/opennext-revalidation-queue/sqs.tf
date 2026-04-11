@@ -14,4 +14,5 @@ resource "aws_sqs_queue" "this" {
 resource "aws_lambda_event_source_mapping" "this" {
   event_source_arn = aws_sqs_queue.this.arn
   function_name    = var.revalidation_function_arn
+  batch_size       = 5
 }
