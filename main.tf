@@ -17,6 +17,16 @@ module "cache_table" {
   slug   = var.slug
 }
 
+module "revalidation_seeder" {
+  source = "./modules/opennext-revalidation-seeder"
+
+  slug       = var.slug
+  source_dir = "${local.opennext_abs_path}/dynamodb-provider"
+  output_dir = "${local.opennext_abs_path}/.build/"
+  table_name = module.cache_table.table_name
+  table_arn  = module.cache_table.table_arn
+}
+
 module "server_function" {
   source = "./modules/opennext-lambda"
 
