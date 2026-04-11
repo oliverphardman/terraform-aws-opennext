@@ -411,7 +411,7 @@ resource "aws_cloudfront_distribution" "this" {
         event_type   = "viewer-request"
         function_arn = aws_cloudfront_function.this.arn
       }
-      
+
     }
   }
 

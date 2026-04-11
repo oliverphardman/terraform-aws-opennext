@@ -17,11 +17,6 @@ module "cache_table" {
   slug   = var.slug
 }
 
-module "revalidation_tag_table" {
-  source = "./modules/opennext-revalidation-tag-mapping"
-  slug   = var.slug
-}
-
 module "server_function" {
   source = "./modules/opennext-lambda"
 
@@ -106,7 +101,6 @@ module "revalidation_function" {
     CACHE_BUCKET_KEY_PREFIX = "cache"
     CACHE_BUCKET_REGION     = var.aws_region
     CACHE_DYNAMO_TABLE      = module.cache_table.table_name
-    REVALIDATION_TAG_TABLE  = module.revalidation_tag_table.table_name
   }
 
   iam_policy_statements = [
@@ -129,11 +123,6 @@ module "revalidation_function" {
       effect    = "Allow"
       actions   = ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem", "dynamodb:Query", "dynamodb:BatchWriteItem"]
       resources = [module.cache_table.table_arn, "${module.cache_table.table_arn}/index/*"]
-    },
-    {
-      effect    = "Allow"
-      actions   = ["dynamodb:GetItem", "dynamodb:Query", "dynamodb:BatchGetItem"]
-      resources = [module.revalidation_tag_table.table_arn, "${module.revalidation_tag_table.table_arn}/index/*"]
     }
   ]
 }
