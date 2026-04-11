@@ -29,7 +29,7 @@ module "server_function" {
 
   environment_variables = merge({
     CACHE_BUCKET_NAME         = module.assets.assets_bucket.bucket
-    CACHE_BUCKET_KEY_PREFIX   = "cache"
+    CACHE_BUCKET_KEY_PREFIX   = "_cache"
     CACHE_BUCKET_REGION       = var.aws_region
     CACHE_DYNAMO_TABLE        = module.cache_table.table_name
     REVALIDATION_QUEUE_URL    = module.revalidation_queue.queue.url
@@ -73,7 +73,7 @@ module "image_optimization_function" {
 
   environment_variables = {
     BUCKET_NAME       = module.assets.assets_bucket.bucket
-    BUCKET_KEY_PREFIX = "assets"
+    BUCKET_KEY_PREFIX = "_assets"
   }
 
   iam_policy_statements = [

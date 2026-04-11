@@ -137,7 +137,7 @@ resource "aws_s3_object" "this" {
   for_each = fileset(var.assets_path, "**")
 
   bucket        = aws_s3_bucket.this.bucket
-  key           = "assets/${each.value}"
+  key           = "_assets/${each.value}"
   source        = "${var.assets_path}/${each.value}"
   source_hash   = filemd5("${var.assets_path}/${each.value}")
   cache_control = length(regexall(".*(_next).*$", each.value)) > 0 ? "public,max-age=31536000,immutable" : var.static_asset_cache_config

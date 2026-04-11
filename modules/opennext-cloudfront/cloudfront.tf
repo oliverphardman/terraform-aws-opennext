@@ -249,7 +249,7 @@ resource "aws_cloudfront_distribution" "this" {
   origin {
     domain_name = var.origins.assets_bucket
     origin_id   = local.assets_origin_id
-    origin_path = "/assets"
+    origin_path = "/_assets"
 
     origin_access_control_id = var.assets_origin_access_control_id
   }
