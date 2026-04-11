@@ -65,6 +65,12 @@ variable "iam_policy_statements" {
   default     = []
 }
 
+variable "streaming" {
+  type        = bool
+  description = "Whether to enable response streaming on the Lambda function URL"
+  default     = false
+}
+
 variable "create_eventbridge_scheduled_rule" {
   type        = bool
   description = "Toggle to create a scheduled rule in EventBridge to invoke the Lambda function"

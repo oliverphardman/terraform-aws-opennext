@@ -58,6 +58,12 @@ variable "opennext_build_path" {
   description = "The path to the folder containing the .open-next build output"
 }
 
+variable "server_streaming" {
+  type        = bool
+  description = "Whether to enable response streaming on the server function. Enables faster Time to First Byte for server-rendered pages."
+  default     = false
+}
+
 variable "warmer_function_enabled" {
   type        = bool
   description = "Whether to create a Lambda function to keep the OpenNext server warm. This can help reduce cold start times, but will incur additional cost."
