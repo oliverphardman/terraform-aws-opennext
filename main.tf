@@ -39,7 +39,7 @@ module "server_function" {
   iam_policy_statements = [
     {
       effect    = "Allow"
-      actions   = ["s3:GetObject", "s3:PutObject", "s3:ListObjects"]
+      actions   = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject", "s3:ListBucket"]
       resources = [module.assets.assets_bucket.arn, "${module.assets.assets_bucket.arn}/*"]
     },
     {
