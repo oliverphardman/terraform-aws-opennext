@@ -1,7 +1,7 @@
 data "aws_caller_identity" "current" {}
 
 module "assets" {
-  source = "./modules/opennext-assets"
+  source = "./modules/assets"
 
   slug                         = var.slug
   aws_account_id               = data.aws_caller_identity.current.account_id
@@ -52,7 +52,7 @@ resource "aws_dynamodb_table" "cache" {
 }
 
 module "revalidation_seeder" {
-  source = "./modules/opennext-revalidation-seeder"
+  source = "./modules/revalidation-seeder"
 
   slug       = var.slug
   source_dir = "${local.opennext_abs_path}/dynamodb-provider"
@@ -62,7 +62,7 @@ module "revalidation_seeder" {
 }
 
 module "server_function" {
-  source = "./modules/opennext-lambda"
+  source = "./modules/lambda"
 
   slug        = var.slug
   description = "Next.js Server"
@@ -106,7 +106,7 @@ module "server_function" {
 }
 
 module "image_optimization_function" {
-  source = "./modules/opennext-lambda"
+  source = "./modules/lambda"
 
   slug                           = "${var.slug}-nextjs-image-optimization"
   description                    = "Next.js Image Optimization"
@@ -131,7 +131,7 @@ module "image_optimization_function" {
 }
 
 module "revalidation_function" {
-  source = "./modules/opennext-lambda"
+  source = "./modules/lambda"
 
   slug                           = "${var.slug}-nextjs-revalidation"
   description                    = "Next.js ISR Revalidation Function"
@@ -173,7 +173,7 @@ module "revalidation_function" {
 }
 
 module "revalidation_queue" {
-  source = "./modules/opennext-revalidation-queue"
+  source = "./modules/revalidation-queue"
 
   slug = "${var.slug}-revalidation-queue"
 
@@ -183,7 +183,7 @@ module "revalidation_queue" {
 
 module "warmer_function" {
   count  = var.warmer_function_enabled ? 1 : 0
-  source = "./modules/opennext-lambda"
+  source = "./modules/lambda"
 
   slug        = "${var.slug}-nextjs-warmer"
   description = "Next.js Warmer Function"
@@ -233,7 +233,7 @@ resource "aws_lambda_permission" "warmer" {
 }
 
 module "cloudfront" {
-  source         = "./modules/opennext-cloudfront"
+  source         = "./modules/cdn"
   slug           = var.slug
   aws_account_id = data.aws_caller_identity.current.account_id
   aws_region     = var.aws_region
