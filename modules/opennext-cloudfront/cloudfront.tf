@@ -77,6 +77,10 @@ resource "aws_s3_bucket_policy" "this" {
   depends_on = [aws_cloudfront_distribution.this]
 }
 
+data "aws_cloudfront_cache_policy" "static" {
+  name = "Managed-CachingOptimized"
+}
+
 data "aws_cloudfront_origin_request_policy" "this" {
   count = var.origin_request_policy == null ? 1 : 0
 
@@ -276,11 +280,7 @@ resource "aws_cloudfront_distribution" "this" {
     target_origin_id = local.assets_origin_id
 
     response_headers_policy_id = aws_cloudfront_response_headers_policy.this.id
-    cache_policy_id            = aws_cloudfront_cache_policy.this.id
-    origin_request_policy_id = try(
-      data.aws_cloudfront_origin_request_policy.this[0].id,
-      aws_cloudfront_origin_request_policy.this[0].id
-    )
+    cache_policy_id            = data.aws_cloudfront_cache_policy.static.id
 
     compress               = true
     viewer_protocol_policy = "redirect-to-https"
@@ -358,11 +358,7 @@ resource "aws_cloudfront_distribution" "this" {
     target_origin_id = local.assets_origin_id
 
     response_headers_policy_id = aws_cloudfront_response_headers_policy.this.id
-    cache_policy_id            = aws_cloudfront_cache_policy.this.id
-    origin_request_policy_id = try(
-      data.aws_cloudfront_origin_request_policy.this[0].id,
-      aws_cloudfront_origin_request_policy.this[0].id
-    )
+    cache_policy_id            = data.aws_cloudfront_cache_policy.static.id
 
     compress               = true
     viewer_protocol_policy = "redirect-to-https"
@@ -378,11 +374,7 @@ resource "aws_cloudfront_distribution" "this" {
       target_origin_id = local.assets_origin_id
 
       response_headers_policy_id = aws_cloudfront_response_headers_policy.this.id
-      cache_policy_id            = aws_cloudfront_cache_policy.this.id
-      origin_request_policy_id = try(
-        data.aws_cloudfront_origin_request_policy.this[0].id,
-        aws_cloudfront_origin_request_policy.this[0].id
-      )
+      cache_policy_id            = data.aws_cloudfront_cache_policy.static.id
 
       compress               = true
       viewer_protocol_policy = "redirect-to-https"
