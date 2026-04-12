@@ -16,8 +16,8 @@ resource "aws_cloudfront_function" "this" {
   }
 }
 
-data "aws_s3_bucket" "this" {
-  bucket = var.assets_bucket_name
+locals {
+  assets_bucket_arn = "arn:aws:s3:::${var.assets_bucket_name}"
 }
 
 # S3 Bucket Policy for OAC
@@ -25,7 +25,7 @@ data "aws_iam_policy_document" "this" {
   statement {
     effect    = "Allow"
     actions   = ["s3:GetObject"]
-    resources = ["${data.aws_s3_bucket.this.arn}/*"]
+    resources = ["${local.assets_bucket_arn}/*"]
 
     principals {
       type        = "Service"
@@ -42,7 +42,7 @@ data "aws_iam_policy_document" "this" {
   statement {
     effect    = "Allow"
     actions   = ["s3:GetObject", "s3:PutObject", "s3:ListBucket"]
-    resources = [data.aws_s3_bucket.this.arn, "${data.aws_s3_bucket.this.arn}/*"]
+    resources = [local.assets_bucket_arn, "${local.assets_bucket_arn}/*"]
 
     principals {
       type        = "AWS"
@@ -53,7 +53,7 @@ data "aws_iam_policy_document" "this" {
   statement {
     effect    = "Deny"
     actions   = ["s3:*"]
-    resources = [data.aws_s3_bucket.this.arn, "${data.aws_s3_bucket.this.arn}/*"]
+    resources = [local.assets_bucket_arn, "${local.assets_bucket_arn}/*"]
 
     condition {
       test     = "Bool"
