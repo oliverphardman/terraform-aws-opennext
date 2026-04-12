@@ -99,6 +99,7 @@ module "terranext" {
   deployment_domain   = local.domain
   acm_arn             = aws_acm_certificate_validation.this.certificate_arn
   hosted_zone_id      = data.aws_route53_zone.this.zone_id
+  create_dns_records  = true
   waf_arn             = aws_wafv2_web_acl.this.arn
 
   runtime_environment_variables = {
