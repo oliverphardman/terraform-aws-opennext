@@ -28,6 +28,11 @@ resource "aws_dynamodb_table" "cache" {
     type = "S"
   }
 
+  attribute {
+    name = "revalidatedAt"
+    type = "S"
+  }
+
   global_secondary_index {
     name = "revalidate"
     key_schema {
