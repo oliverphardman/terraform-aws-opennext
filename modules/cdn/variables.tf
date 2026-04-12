@@ -217,3 +217,9 @@ variable "route53_hosted_zone_id" {
   type        = string
   default     = null
 }
+
+variable "create_dns_records" {
+  description = "Whether to create Route 53 DNS records. Must be a static value known at plan time."
+  type        = bool
+  default     = false
+}

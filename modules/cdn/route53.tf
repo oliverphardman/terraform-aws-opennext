@@ -1,5 +1,5 @@
 resource "aws_route53_record" "a" {
-  for_each = var.route53_hosted_zone_id != null ? toset(var.aliases) : toset([])
+  for_each = var.create_dns_records ? toset(var.aliases) : toset([])
 
   zone_id = var.route53_hosted_zone_id
   name    = each.value
@@ -13,7 +13,7 @@ resource "aws_route53_record" "a" {
 }
 
 resource "aws_route53_record" "aaaa" {
-  for_each = var.route53_hosted_zone_id != null ? toset(var.aliases) : toset([])
+  for_each = var.create_dns_records ? toset(var.aliases) : toset([])
 
   zone_id = var.route53_hosted_zone_id
   name    = each.value

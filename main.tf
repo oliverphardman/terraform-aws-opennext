@@ -249,6 +249,7 @@ module "cloudfront" {
   assets_paths                    = var.static_paths
   custom_waf                      = var.waf_arn != null ? { arn = var.waf_arn } : null
   route53_hosted_zone_id          = var.hosted_zone_id
+  create_dns_records              = var.hosted_zone_id != null
   assets_origin_access_control_id = module.assets.cloudfront_origin_access_control.id
   assets_bucket_name              = module.assets.assets_bucket.bucket
   server_function_role_arn        = module.server_function.lambda_role.arn
