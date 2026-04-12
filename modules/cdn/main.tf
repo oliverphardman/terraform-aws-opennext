@@ -261,6 +261,14 @@ resource "aws_cloudfront_distribution" "this" {
     domain_name              = var.origins.server_function
     origin_id                = local.server_origin_id
     origin_access_control_id = var.server_function_oac_id
+
+    custom_origin_config {
+      http_port              = 80
+      https_port             = 443
+      ip_address_type = "dualstack"
+      origin_protocol_policy = "https-only"
+      origin_ssl_protocols   = ["TLSv1.2"]
+    }
   }
 
   # Image Optimization Function Origin
@@ -268,6 +276,14 @@ resource "aws_cloudfront_distribution" "this" {
     domain_name              = var.origins.image_optimization_function
     origin_id                = local.image_optimization_origin_id
     origin_access_control_id = var.image_optimization_function_oac_id
+
+    custom_origin_config {
+      http_port              = 80
+      https_port             = 443
+      ip_address_type = "dualstack"
+      origin_protocol_policy = "https-only"
+      origin_ssl_protocols   = ["TLSv1.2"]
+    }
   }
 
   # Behaviour - Hashed Static Files (/_next/static/*)
