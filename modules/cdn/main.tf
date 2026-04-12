@@ -21,56 +21,41 @@ locals {
 }
 
 # S3 Bucket Policy for OAC
-data "aws_iam_policy_document" "this" {
-  statement {
-    effect    = "Allow"
-    actions   = ["s3:GetObject"]
-    resources = ["${local.assets_bucket_arn}/*"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["cloudfront.amazonaws.com"]
-    }
-
-    condition {
-      test     = "StringEquals"
-      variable = "aws:SourceArn"
-      values   = [aws_cloudfront_distribution.this.arn]
-    }
-  }
-
-  statement {
-    effect    = "Allow"
-    actions   = ["s3:GetObject", "s3:PutObject", "s3:ListBucket"]
-    resources = [local.assets_bucket_arn, "${local.assets_bucket_arn}/*"]
-
-    principals {
-      type        = "AWS"
-      identifiers = [var.server_function_role_arn]
-    }
-  }
-
-  statement {
-    effect    = "Deny"
-    actions   = ["s3:*"]
-    resources = [local.assets_bucket_arn, "${local.assets_bucket_arn}/*"]
-
-    condition {
-      test     = "Bool"
-      values   = ["false"]
-      variable = "aws:SecureTransport"
-    }
-
-    principals {
-      type        = "*"
-      identifiers = ["*"]
-    }
-  }
-}
-
 resource "aws_s3_bucket_policy" "this" {
   bucket = var.assets_bucket_name
-  policy = data.aws_iam_policy_document.this.json
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect    = "Allow"
+        Action    = "s3:GetObject"
+        Resource  = "${local.assets_bucket_arn}/*"
+        Principal = { Service = "cloudfront.amazonaws.com" }
+        Condition = {
+          StringEquals = {
+            "aws:SourceArn" = aws_cloudfront_distribution.this.arn
+          }
+        }
+      },
+      {
+        Effect    = "Allow"
+        Action    = ["s3:GetObject", "s3:PutObject", "s3:ListBucket"]
+        Resource  = [local.assets_bucket_arn, "${local.assets_bucket_arn}/*"]
+        Principal = { AWS = var.server_function_role_arn }
+      },
+      {
+        Effect    = "Deny"
+        Action    = "s3:*"
+        Resource  = [local.assets_bucket_arn, "${local.assets_bucket_arn}/*"]
+        Principal = "*"
+        Condition = {
+          Bool = {
+            "aws:SecureTransport" = "false"
+          }
+        }
+      },
+    ]
+  })
 
   depends_on = [aws_cloudfront_distribution.this]
 }

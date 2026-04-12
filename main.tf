@@ -265,15 +265,31 @@ module "cloudfront" {
 }
 
 resource "aws_lambda_permission" "server" {
-  statement_id  = "AllowCloudFrontServicePrincipal"
-  action        = "lambda:InvokeFunctionUrl"
+  statement_id  = "AllowCloudFrontFunctionInvocation"
+  action        = "lambda:InvokeFunction"
   function_name = module.server_function.lambda_function.function_name
   principal     = "cloudfront.amazonaws.com"
   source_arn    = module.cloudfront.cloudfront_distribution.arn
 }
 
 resource "aws_lambda_permission" "image_optimization" {
-  statement_id  = "AllowCloudFrontServicePrincipal"
+  statement_id  = "AllowCloudFrontFunctionInvocation"
+  action        = "lambda:InvokeFunction"
+  function_name = module.image_optimization_function.lambda_function.function_name
+  principal     = "cloudfront.amazonaws.com"
+  source_arn    = module.cloudfront.cloudfront_distribution.arn
+}
+
+resource "aws_lambda_permission" "server_url" {
+  statement_id  = "AllowCloudFrontFunctionURLInvocation"
+  action        = "lambda:InvokeFunctionUrl"
+  function_name = module.server_function.lambda_function.function_name
+  principal     = "cloudfront.amazonaws.com"
+  source_arn    = module.cloudfront.cloudfront_distribution.arn
+}
+
+resource "aws_lambda_permission" "image_optimization_url" {
+  statement_id  = "AllowCloudFrontFunctionURLInvocation"
   action        = "lambda:InvokeFunctionUrl"
   function_name = module.image_optimization_function.lambda_function.function_name
   principal     = "cloudfront.amazonaws.com"
