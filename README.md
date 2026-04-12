@@ -17,14 +17,12 @@ module "terranext" {
   name               = "My Website"
   slug               = "my-website"
   aws_region         = "us-east-1"
-  opennext_build_path = ".open-next"
+  opennext_build_path = "../.open-next"
 
   deployment_domain = "example.com"
   acm_arn           = aws_acm_certificate.cert.arn
   hosted_zone_id    = data.aws_route53_zone.main.zone_id
 }
-```
-> Terraform can't access artifacts in directories parent to where it is being executed. Make sure your OpenNext build is somewhere accessible by Terraform, or use the [chdir](https://developer.hashicorp.com/terraform/cli/commands#switching-working-directory-with-chdir) option to run Terraform from somewhere else.
 
 ## Architecture
 
