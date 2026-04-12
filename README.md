@@ -1,15 +1,15 @@
-# Terranext
+# TerraNext
 
-Terranext is an opinionated Terraform module designed to make it easy for you to host your Next.js app on AWS, without breaking the bank on compute.
+TerraNext is an opinionated Terraform module designed to make it easy for you to host your Next.js app on AWS, without breaking the bank on compute.
 
-Simply use [Terraform](https://developer.hashicorp.com/terraform) to define any supporting infrastructure you require, such as your domain or WAF configuration, then include the Terranext module to get started. Build your app using [OpenNext](https://opennext.js.org/) and Terraform will spin up the cloud resources you need to host it.
+Simply use [Terraform](https://developer.hashicorp.com/terraform) to define any supporting infrastructure you require, such as your domain or WAF configuration, then include the TerraNext module to get started. Build your app using [OpenNext](https://opennext.js.org/) and Terraform will spin up the cloud resources you need to host it.
 
-This module is based on the excellent work by [NHS England](https://github.com/orgs/nhsengland) on [terraform-aws-opennext](https://github.com/nhs-england-tools/terraform-aws-opennext). Their module has not been maintained for a long time, but **Terranext supports v6 of the AWS Terraform provider**, utilizes new features in AWS services and is far simpler to use.
+This module is based on the excellent work by [NHS England](https://github.com/orgs/nhsengland) on [terraform-aws-opennext](https://github.com/nhs-england-tools/terraform-aws-opennext). Their module has not been maintained for a long time, but **TerraNext supports v6 of the AWS Terraform provider**, utilizes new features in AWS services and is far simpler to use.
 
 ## Quick start
 1. Build your app with OpenNext
 `npx @opennextjs/aws@latest build`
-2. Include the Terranext module with the required variables.
+2. Include the TerraNext module with the required variables.
 ```hcl
 module "terranext" {
   source = "path/to/terranext"
@@ -28,9 +28,9 @@ module "terranext" {
 
 ![OpenNext AWS default recommended architecture](https://opennext.js.org/architecture.png)
 
-Terranext provides full coverage of the [OpenNext recommended AWS architecture](https://opennext.js.org/aws/architecture):
+TerraNext provides full coverage of the [OpenNext recommended AWS architecture](https://opennext.js.org/aws/architecture):
 
-| Component | Architecture layer | Terranext |
+| Component | Architecture layer | TerraNext |
 |---|---|---|
 | CloudFront CDN cache | Core | CloudFront distribution with HTTP/2 and HTTP/3, HSTS, CORS, and OAC-authenticated origins |
 | Server Function | Core | ARM64 Lambda (Node.js 24.x) with Function URL. Routes `/*`, `/_next/data/*`, and `/api/*` |
@@ -89,7 +89,7 @@ CloudFront automatically serves both `example.com` and `www.example.com`, redire
 ## How it works
 
 1. You build your Next.js app with OpenNext (`npx open-next build`), which outputs Lambda-compatible bundles and static assets
-2. Terranext deploys each bundle as an ARM64 Lambda function
+2. TerraNext deploys each bundle as an ARM64 Lambda function
 3. Static assets are uploaded to S3
 4. CloudFront routes requests to the right origin based on path patterns:
    - `/_next/static/*`, `/static/*`, and configured static paths go to S3
@@ -98,10 +98,10 @@ CloudFront automatically serves both `example.com` and `www.example.com`, redire
 5. ISR revalidation requests are queued in SQS FIFO and processed by the Revalidation Lambda
 
 ## Contributing
-Terranext is quite opinionated and thus doesn't expose many variables. The aim of this project is to make it really simple for anyone to get their site on AWS without having to keep a server constantly warm, while avoiding the drawbacks of using services like Amplify which give you no control over your infrastructure.
+TerraNext is quite opinionated and thus doesn't expose many variables. The aim of this project is to make it really simple for anyone to get their site on AWS without having to keep a server constantly warm, while avoiding the drawbacks of using services like Amplify which give you no control over your infrastructure.
 
 With that said, there's always choices that won't suit everyone. We'd love to hear about those, please raise an issue! Otherwise, consider making it configurable through a variable. Contributions are very welcome!
 
 ## License
 
-Terranext is free software under the MIT Licence. Please note that it comes with ABSOLUTELY NO WARRANTY, to the extend permitted by applicable law. See [LICENSE](LICENSE) for details.
+TerraNext is free software under the MIT Licence. Please note that it comes with ABSOLUTELY NO WARRANTY, to the extend permitted by applicable law. See [LICENSE](LICENSE) for details.

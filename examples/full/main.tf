@@ -86,7 +86,7 @@ resource "aws_wafv2_web_acl" "this" {
   }
 }
 
-# Terranext
+# TerraNext
 
 module "terranext" {
   source  = "oliverphardman/terranext/aws"
