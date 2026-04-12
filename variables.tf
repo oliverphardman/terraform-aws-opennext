@@ -47,6 +47,12 @@ variable "hosted_zone_id" {
   default     = null
 }
 
+variable "create_dns_records" {
+  type        = bool
+  description = "Whether to create Route 53 DNS records. Set to true when providing hosted_zone_id."
+  default     = false
+}
+
 variable "static_asset_cache_config" {
   type        = string
   description = "Static asset cache config"
