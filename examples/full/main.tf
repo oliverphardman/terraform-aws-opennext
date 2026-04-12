@@ -95,7 +95,7 @@ module "terranext" {
   name                = "My Website"
   slug                = "my-website"
   aws_region          = local.region
-  opennext_build_path = ".open-next"
+  opennext_build_path = "../.open-next"
   deployment_domain   = local.domain
   acm_arn             = aws_acm_certificate_validation.this.certificate_arn
   hosted_zone_id      = data.aws_route53_zone.this.zone_id
