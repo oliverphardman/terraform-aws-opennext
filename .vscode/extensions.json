@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "foxundermoon.shell-format",
+    "hashicorp.terraform",
+    "amazonwebservices.aws-toolkit-vscode",
+    "github.vscode-github-actions",
+    "csstools.postcss",
+    "bradlc.vscode-tailwindcss"
+  ]
+}
