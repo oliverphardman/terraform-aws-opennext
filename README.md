@@ -102,7 +102,7 @@ CloudFront automatically serves both `example.com` and `www.example.com`, redire
 ## Contributing
 TerraNext is quite opinionated and thus doesn't expose many variables. The aim of this project is to make it really simple for anyone to get their site on AWS without having to keep a server constantly warm, while avoiding the drawbacks of using services like Amplify which give you no control over your infrastructure.
 
-With that said, there's always choices that won't suit everyone. We'd love to hear about those, please raise an issue! Otherwise, consider making it configurable through a variable. Contributions are very welcome!
+With that said, if you're looking to configure something that isn't exposed, please consider raising an issue!
 
 ## License
 
