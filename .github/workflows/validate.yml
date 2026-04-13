@@ -1,0 +1,32 @@
+name: Validate
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Terraform Validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@5e8dbf3c6d9deaf4193ca7a8fb23f2ac83bb6c85
+
+      - name: Check formatting
+        run: terraform fmt -check -recursive
+
+      - name: Initialise
+        run: terraform init -backend=false
+
+      - name: Validate
+        run: terraform validate
