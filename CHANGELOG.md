@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/oliverphardman/terraform-aws-opennext/compare/v1.0.1...v1.0.2) (2026-04-13)
+
+
+### Bug Fixes
+
+* README markdown syntax ([#5](https://github.com/oliverphardman/terraform-aws-opennext/issues/5)) ([972fe0f](https://github.com/oliverphardman/terraform-aws-opennext/commit/972fe0f286e35f0f914a410ae3d5e9cca42e18a4))
+
 ## [1.0.1](https://github.com/oliverphardman/terraform-aws-opennext/compare/v1.0.0...v1.0.1) (2026-04-13)
 
 
