@@ -14,8 +14,17 @@ jobs:
     name: Release Please
     runs-on: ubuntu-latest
     steps:
+      - name: Get GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        with:
+          client-id: ${{ secrets.TERRANEXT_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.TERRANEXT_BOT_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+
       - name: Release Please
         id: release-please
         uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071 # v4.4.1
         with:
-          release-type: terraform-module
+          release-type: node
+          token: ${{ steps.app-token.outputs.token }}
