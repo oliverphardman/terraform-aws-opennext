@@ -14,16 +14,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        id: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Setup Terraform
+        id: terraform-setup
         uses: hashicorp/setup-terraform@5e8dbf3c6d9deaf4193ca7a8fb23f2ac83bb6c85
 
       - name: Check formatting
+        id: terraform-fmt
         run: terraform fmt -check -recursive
 
-      - name: Initialise
+      - name: Initialize
+        id: terraform-initialize
         run: terraform init -backend=false
 
       - name: Validate
+        id: terraform-validate
         run: terraform validate

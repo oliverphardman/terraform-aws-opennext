@@ -67,7 +67,7 @@ variable "opennext_build_path" {
 variable "server_streaming" {
   type        = bool
   description = "Whether to enable response streaming on the server function. Enables faster Time to First Byte for server-rendered pages."
-  default     = false
+  default     = true
 }
 
 variable "warmer_function_enabled" {

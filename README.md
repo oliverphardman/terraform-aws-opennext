@@ -1,3 +1,7 @@
+<div align="center">
+   <a href="https://terranext.dev"><img src="docs/res/header.svg?raw=true" width="400" alt="TerraNext (Next.js + OpenNext + Terraform + AWS)" title="TerraNext"></a>
+</div>
+
 # TerraNext
 
 TerraNext is an opinionated Terraform module designed to make it easy for you to host your Next.js app on AWS, without breaking the bank on compute.
@@ -6,7 +10,7 @@ Simply use [Terraform](https://developer.hashicorp.com/terraform) to define any 
 
 This module is based on the excellent work by [NHS England](https://github.com/orgs/nhsengland) on [terraform-aws-opennext](https://github.com/nhs-england-tools/terraform-aws-opennext). Their module has not been maintained for a long time, but **TerraNext supports v6 of the AWS Terraform provider**, utilizes new features in AWS services and is far simpler to use.
 
-## Quick start
+## Quick Start
 1. Build your app with OpenNext
 `npx @opennextjs/aws@latest build`
 2. Include the TerraNext module with the required variables.
@@ -42,15 +46,8 @@ TerraNext provides full coverage of the [OpenNext recommended AWS architecture](
 | Revalidation Function | ISR Revalidation | ARM64 Lambda triggered by SQS. Updates cache in S3 and DynamoDB |
 | Cache Files | ISR Revalidation | Stored in the same S3 assets bucket under the `_cache` prefix |
 | Cache Table | ISR Revalidation | DynamoDB table storing cache metadata and tag-to-path mappings, seeded at deploy time |
-| Warmer Function | Warmer (optional) | ARM64 Lambda invoked every 5 minutes by EventBridge to keep the server function warm |
+| Warmer Function | Warmer (optional) | Lambda invoked every 5 minutes by EventBridge to keep the server function warm |
 | Route 53 | DNS (optional) | A and AAAA alias records for your custom domain and `www` subdomain |
-
-## Prerequisites
-
-- [Terraform](https://www.terraform.io/) >= 1.1
-- AWS provider ~> 6.2
-- An [OpenNext](https://opennext.js.org/) build output directory (run `npx open-next build` in your Next.js project)
-- An ACM certificate in `us-east-1` for your domain (required by CloudFront)
 
 ## Variables
 
@@ -69,14 +66,15 @@ TerraNext provides full coverage of the [OpenNext recommended AWS architecture](
 
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
-| `hosted_zone_id` | `string` | `null` | Route 53 hosted zone ID. When provided, A and AAAA records are created for the deployment domain |
+| `hosted_zone_id` | `string` | `null` | (Recommended) Route 53 hosted zone ID. When provided, A and AAAA records are created for the deployment domain - required if `create_dns_records` is `true` |
+| `create_dns_records` | `bool` | `false` | (Recommended) Whether to create DNS records on your Route 53 hosted zone - requires `hosted_zone_id` to be set
 | `waf_arn` | `string` | `null` | ARN of a WAF WebACL to associate with the CloudFront distribution |
 | `runtime_environment_variables` | `map(string)` | `{}` | Additional environment variables for the server Lambda function |
 | `warmer_function_enabled` | `bool` | `true` | Whether to create a warmer function to reduce cold starts |
 | `use_account_regional_buckets` | `bool` | `true` | Use account-regional S3 namespace to avoid global naming conflicts |
 | `static_paths` | `list(string)` | `["/favicon.ico", ...]` | Static asset paths to cache via CloudFront |
 | `static_asset_cache_config` | `string` | `"public,max-age=0,..."` | Cache-Control header for static assets |
-| `server_streaming` | `bool` | `false` | Enable response streaming on the server function for faster TTFB |
+| `server_streaming` | `bool` | `true` | Enable response streaming on the server function for faster TTFB |
 | `enable_www_alias` | `bool` | `true` | Create an additional `www` alias and redirect to the apex domain |
 
 ## Outputs
@@ -106,4 +104,4 @@ With that said, if you're looking to configure something that isn't exposed, ple
 
 ## License
 
-TerraNext is free software under the MIT Licence. Please note that it comes with ABSOLUTELY NO WARRANTY, to the extend permitted by applicable law. See [LICENSE](LICENSE) for details.
+TerraNext is free software under the MIT Licence. Please note that it comes with ABSOLUTELY NO WARRANTY, to the extent permitted by applicable law. See [LICENSE](LICENSE) for details.
