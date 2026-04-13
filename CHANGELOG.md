@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.1.0](https://github.com/oliverphardman/terraform-aws-opennext/compare/v1.0.2...v1.1.0) (2026-04-13)
+
+
+### Features
+
+* add VS Code settings/recommended extensions ([894781c](https://github.com/oliverphardman/terraform-aws-opennext/commit/894781c23c259259a6a292f14e92ee4058e79e6f))
+* Terraform validation workflow ([ddd5dac](https://github.com/oliverphardman/terraform-aws-opennext/commit/ddd5dac66f2d148e0f60b22ba157b277119f3fe2))
+
+
+### Bug Fixes
+
+* Prettier ignore CHANGELOG ([0abaf71](https://github.com/oliverphardman/terraform-aws-opennext/commit/0abaf71d1ed2cfa1c310c2899a4cde9e7a4cc9ef))
+* Release Please use GitHub app token ([aa6045d](https://github.com/oliverphardman/terraform-aws-opennext/commit/aa6045da144967d4f311a37d4cb1ca85f4830b8f))
+* restore Release Please to correct release-type ([1cdc3a8](https://github.com/oliverphardman/terraform-aws-opennext/commit/1cdc3a8aba0c005ceca7b3085212a37b956ff1a8))
+* run workflows on push to main ([#10](https://github.com/oliverphardman/terraform-aws-opennext/issues/10)) ([1954de8](https://github.com/oliverphardman/terraform-aws-opennext/commit/1954de89aa4a0984ed07bcb3357ee17dbb0a48bf))
+* scope CodeQL workflow permissions ([#9](https://github.com/oliverphardman/terraform-aws-opennext/issues/9)) ([c8b3ddc](https://github.com/oliverphardman/terraform-aws-opennext/commit/c8b3ddcb058f971f91d6e2d37b149097cbb61410))
+* terraform fmt cdn ([b082303](https://github.com/oliverphardman/terraform-aws-opennext/commit/b08230329be3e64327cf864945db97e8cbbcbbd8))
+
 ## [1.0.2](https://github.com/oliverphardman/terraform-aws-opennext/compare/v1.0.1...v1.0.2) (2026-04-13)
 
 ### Bug Fixes
