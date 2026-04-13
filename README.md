@@ -12,7 +12,7 @@ This module is based on the excellent work by [NHS England](https://github.com/o
 2. Include the TerraNext module with the required variables.
 ```hcl
 module "terranext" {
-  source = "oliverphardman/terranext/aws"
+  source = "oliverphardman/opennext/aws"
 
   name               = "My Website"
   slug               = "my-website"
