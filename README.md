@@ -10,6 +10,8 @@ Simply use [Terraform](https://developer.hashicorp.com/terraform) to define any 
 
 This module is based on the excellent work by [NHS England](https://github.com/orgs/nhsengland) on [terraform-aws-opennext](https://github.com/nhs-england-tools/terraform-aws-opennext). Their module has not been maintained for a long time, but **TerraNext supports v6 of the AWS Terraform provider**, utilizes new features in AWS services and is far simpler to use.
 
+[TerraNext's website](https://terranext.dev) is hosted using TerraNext! Feel free to explore the [source code](https://github.com/oliverphardman/terranext-site).
+
 ## Quick Start
 
 1. Build your app with OpenNext
