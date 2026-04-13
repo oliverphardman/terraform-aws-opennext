@@ -23,7 +23,7 @@ module "terranext" {
   acm_arn           = aws_acm_certificate.cert.arn
   hosted_zone_id    = data.aws_route53_zone.main.zone_id
   create_dns_records  = true
-}
+}```
 
 ## Architecture
 
