@@ -1,1 +1,3 @@
+# Security
+
 Please use the "Report a vulnerability" button in GitHub or email [hello@oliverhardman.com](mailto:hello@oliverhardman.com) to report any security vulnerabilities.
