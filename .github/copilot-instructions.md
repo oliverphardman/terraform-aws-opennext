@@ -1,0 +1,2 @@
+- Always use Conventional Commits for commit messages.
+- Always pin dependencies in GitHub Actions workflows if they are mutable.
