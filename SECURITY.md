@@ -1,0 +1,1 @@
+Please contact hello@oliverhardman.com to report any security vulnerabilities.
