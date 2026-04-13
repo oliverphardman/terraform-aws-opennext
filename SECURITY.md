@@ -1,1 +1,1 @@
-Please contact hello@oliverhardman.com to report any security vulnerabilities.
+Please contact [hello@oliverhardman.com](mailto:hello@oliverhardman.com) to report any security vulnerabilities.
