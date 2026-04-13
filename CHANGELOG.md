@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/oliverphardman/terraform-aws-opennext/compare/v1.1.0...v1.1.1) (2026-04-13)
+
+
+### Bug Fixes
+
+* remove icons from default static paths ([004bb2b](https://github.com/oliverphardman/terraform-aws-opennext/commit/004bb2bca34fab08740feb48aad504ac5be55eb5))
+
 ## [1.1.0](https://github.com/oliverphardman/terraform-aws-opennext/compare/v1.0.2...v1.1.0) (2026-04-13)
 
 
