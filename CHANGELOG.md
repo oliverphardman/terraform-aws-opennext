@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/oliverphardman/terraform-aws-opennext/compare/v1.0.0...v1.0.1) (2026-04-13)
+
+
+### Bug Fixes
+
+* module name reference ([#3](https://github.com/oliverphardman/terraform-aws-opennext/issues/3)) ([b81107f](https://github.com/oliverphardman/terraform-aws-opennext/commit/b81107f1b501cefc5c9b257d41ae036b1c3998e7))
+
 ## 1.0.0 (2026-04-13)
 
 
