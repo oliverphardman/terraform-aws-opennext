@@ -24,6 +24,7 @@ module "terranext" {
   hosted_zone_id    = data.aws_route53_zone.main.zone_id
   create_dns_records  = true
 }
+```
 
 ## Architecture
 
