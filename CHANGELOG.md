@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/oliverphardman/terraform-aws-opennext/compare/v1.1.1...v1.1.2) (2026-04-13)
+
+
+### Bug Fixes
+
+* always disable server streaming ([0369a1e](https://github.com/oliverphardman/terraform-aws-opennext/commit/0369a1ed969760681dfe6815aee3b909a131f89e))
+
 ## [1.1.1](https://github.com/oliverphardman/terraform-aws-opennext/compare/v1.1.0...v1.1.1) (2026-04-13)
 
 
