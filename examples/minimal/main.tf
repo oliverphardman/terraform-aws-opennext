@@ -50,7 +50,7 @@ resource "aws_acm_certificate_validation" "this" {
 # TerraNext
 
 module "terranext" {
-  source  = "oliverphardman/terranext/aws"
+  source  = "oliverphardman/opennext/aws"
   version = "~> 1.0"
 
   name                = "My Website"
