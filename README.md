@@ -1,5 +1,5 @@
 <div align="center">
-   <a href="https://terranext.dev"><img src="docs/res/header.svg?raw=true" width="400" alt="TerraNext (Next.js + OpenNext + Terraform + AWS)" title="TerraNext"></a>
+   <a href="https://terranext.dev"><img src="https://raw.githubusercontent.com/TerraNext-Dev/terraform-aws-opennext/refs/heads/main/docs/res/header.svg?raw=true" width="400" alt="TerraNext (Next.js + OpenNext + Terraform + AWS)" title="TerraNext"></a>
 </div>
 
 # TerraNext
