@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/TerraNext-Dev/terraform-aws-opennext/compare/v1.1.3...v1.2.0) (2026-04-14)
+
+
+### Features
+
+* streaming support ([1fdc9e7](https://github.com/TerraNext-Dev/terraform-aws-opennext/commit/1fdc9e7d1273a71690e50595d4e8522e2cb3467d))
+
+
+### Bug Fixes
+
+* TerraNext header image in README static path ([76a9f7b](https://github.com/TerraNext-Dev/terraform-aws-opennext/commit/76a9f7b72deaa0996d7b9f09964e9ea6f79c4d2d))
+
 ## [1.1.3](https://github.com/TerraNext-Dev/terraform-aws-opennext/compare/v1.1.2...v1.1.3) (2026-04-14)
 
 
