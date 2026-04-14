@@ -13,6 +13,12 @@ variable "deployment_domain" {
   type        = string
 }
 
+variable "server_streaming" {
+  description = "Whether to enable response streaming on the server function. Enables faster Time to First Byte for server-rendered pages."
+  type        = bool
+  default     = false
+}
+
 variable "acm_arn" {
   description = "The ARN of an existing ACM certificate to use for the CloudFront distribution."
   type        = string

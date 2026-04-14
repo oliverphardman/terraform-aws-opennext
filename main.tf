@@ -72,7 +72,7 @@ module "server_function" {
   slug        = var.slug
   description = "Next.js Server"
   memory_size = 512
-  streaming   = false
+  streaming   = var.server_streaming
 
   source_dir = "${local.opennext_abs_path}/server-functions/default"
   output_dir = "${local.opennext_abs_path}/.build/"

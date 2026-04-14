@@ -101,6 +101,10 @@ CloudFront automatically serves both `example.com` and `www.example.com`, redire
    - Everything else goes to the Server Lambda (your Next.js runtime)
 5. ISR revalidation requests are queued in SQS FIFO and processed by the Revalidation Lambda
 
+## Streaming
+
+Set the `server_streaming` variable to `true` to enable streaming from your server function to CloudFront. This is disabled by default as it requires you add the `aws-lambda-streaming` wrapper to your `open-next.config.ts`. [Please check the OpenNext docs for more information.](https://opennext.js.org/aws/config/simple_example#streaming-with-lambda)
+
 ## Contributing
 
 TerraNext is quite opinionated and thus doesn't expose many variables. The aim of this project is to make it really simple for anyone to get their site on AWS without having to keep a server constantly warm, while avoiding the drawbacks of using services like Amplify which give you no control over your infrastructure.
