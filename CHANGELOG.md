@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3](https://github.com/TerraNext-Dev/terraform-aws-opennext/compare/v1.1.2...v1.1.3) (2026-04-14)
+
+
+### Bug Fixes
+
+* reserved concurrent executions always defaults to 10 ([#14](https://github.com/TerraNext-Dev/terraform-aws-opennext/issues/14)) ([9ae65fb](https://github.com/TerraNext-Dev/terraform-aws-opennext/commit/9ae65fbc23b4e88024b40be0049c8ff7264efd9e))
+
 ## [1.1.2](https://github.com/terranext-dev/terraform-aws-opennext/compare/v1.1.1...v1.1.2) (2026-04-13)
 
 
