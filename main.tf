@@ -113,10 +113,9 @@ module "server_function" {
 module "image_optimization_function" {
   source = "./modules/lambda"
 
-  slug                           = "${var.slug}-nextjs-image-optimization"
-  description                    = "Next.js Image Optimization"
-  memory_size                    = 512
-  reserved_concurrent_executions = 3
+  slug        = "${var.slug}-nextjs-image-optimization"
+  description = "Next.js Image Optimization"
+  memory_size = 512
 
   source_dir = "${local.opennext_abs_path}/image-optimization-function/"
   output_dir = "${local.opennext_abs_path}/.build/"
@@ -138,10 +137,9 @@ module "image_optimization_function" {
 module "revalidation_function" {
   source = "./modules/lambda"
 
-  slug                           = "${var.slug}-nextjs-revalidation"
-  description                    = "Next.js ISR Revalidation Function"
-  memory_size                    = 128
-  reserved_concurrent_executions = 3
+  slug        = "${var.slug}-nextjs-revalidation"
+  description = "Next.js ISR Revalidation Function"
+  memory_size = 128
 
   source_dir = "${local.opennext_abs_path}/revalidation-function/"
   output_dir = "${local.opennext_abs_path}/.build/"
@@ -193,8 +191,6 @@ module "warmer_function" {
   slug        = "${var.slug}-nextjs-warmer"
   description = "Next.js Warmer Function"
   memory_size = 128
-
-  reserved_concurrent_executions = 3
 
   source_dir = "${local.opennext_abs_path}/warmer-function/"
   output_dir = "${local.opennext_abs_path}/.build/"
