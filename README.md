@@ -6,11 +6,11 @@
 
 TerraNext is an opinionated Terraform module designed to make it easy for you to host your Next.js app on AWS, without breaking the bank on compute.
 
-Simply use [Terraform](https://developer.hashicorp.com/terraform) to define any supporting infrastructure you require, such as your domain or WAF configuration, then include the TerraNext module to get started. Build your app using [OpenNext](https://opennext.js.org/) and Terraform will spin up the cloud resources you need to host it. TerraNext is available from the [Terraform Registry](https://registry.terraform.io/modules/terranext-dev/opennext/aws).
+Simply use [Terraform](https://developer.hashicorp.com/terraform) to define any supporting infrastructure you require, such as your domain or WAF configuration, then include the TerraNext module to get started. Build your app using [OpenNext](https://opennext.js.org/) and Terraform will spin up the cloud resources you need to host it. TerraNext is available from the [Terraform Registry](https://registry.terraform.io/modules/TerraNext-Dev/opennext/aws).
 
 This module is based on the excellent work by [NHS England](https://github.com/orgs/nhsengland) on [terraform-aws-opennext](https://github.com/nhs-england-tools/terraform-aws-opennext). Their module has not been maintained for a long time, but **TerraNext supports v6 of the AWS Terraform provider**, utilizes new features in AWS services and is far simpler to use.
 
-[TerraNext's website](https://terranext.dev) is hosted using TerraNext! Feel free to explore the [source code](https://github.com/terranext-dev/terranext-site).
+[TerraNext's website](https://terranext.dev) is hosted using TerraNext! Feel free to explore the [source code](https://github.com/TerraNext-Dev/terranext-site).
 
 ## Quick Start
 
@@ -20,7 +20,7 @@ This module is based on the excellent work by [NHS England](https://github.com/o
 
 ```hcl
 module "terranext" {
-  source = "terranext-dev/opennext/aws"
+  source = "TerraNext-Dev/opennext/aws"
 
   name               = "My Website"
   slug               = "my-website"

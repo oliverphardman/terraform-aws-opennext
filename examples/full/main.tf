@@ -89,7 +89,7 @@ resource "aws_wafv2_web_acl" "this" {
 # TerraNext
 
 module "terranext" {
-  source  = "terranext-dev/opennext/aws"
+  source  = "TerraNext-Dev/opennext/aws"
   version = "~> 1.0"
 
   name                = "My Website"
