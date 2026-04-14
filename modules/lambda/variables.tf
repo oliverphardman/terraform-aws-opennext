@@ -52,7 +52,7 @@ variable "kms_key_arn" {
 variable "reserved_concurrent_executions" {
   description = "Concurrency limit for the Lambda function"
   type        = number
-  default     = 10
+  default     = -1
 }
 
 variable "iam_policy_statements" {
