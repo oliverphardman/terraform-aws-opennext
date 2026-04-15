@@ -32,7 +32,7 @@ resource "aws_dynamodb_table" "cache" {
 
   attribute {
     name = "revalidatedAt"
-    type = "S"
+    type = "N"
   }
 
   global_secondary_index {
