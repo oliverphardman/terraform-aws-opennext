@@ -80,6 +80,7 @@ TerraNext provides full coverage of the [OpenNext recommended AWS architecture](
 | `static_asset_cache_config`     | `string`       | `"public,max-age=0,..."` | Cache-Control header for static assets                                                                                                                      |
 | `server_streaming`              | `bool`         | `true`                   | Enable response streaming on the server function for faster TTFB                                                                                            |
 | `enable_www_alias`              | `bool`         | `true`                   | Create an additional `www` alias and redirect to the apex domain                                                                                            |
+| `tags`                          | `map(string)`  | `{}`                     | Additional tags to apply to all resources                                                                                                                   |
 
 ## Outputs
 

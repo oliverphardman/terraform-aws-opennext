@@ -402,15 +402,20 @@ resource "aws_cloudfront_distribution" "this" {
     }
   }
 
-  tags = {
-    Name = var.name
-  }
+  tags = merge(
+    var.tags,
+    {
+      Name = var.name
+    }
+  )
 }
 
 resource "aws_s3_bucket" "log" {
   bucket           = "${var.slug}-logs-${var.aws_account_id}-${var.aws_region}-an"
   bucket_namespace = "account-regional"
   force_destroy    = true
+
+  tags = var.tags
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "log" {

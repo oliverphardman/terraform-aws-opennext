@@ -8,11 +8,15 @@ data "archive_file" "this" {
 resource "aws_cloudwatch_log_group" "this" {
   name              = "/aws/lambda/${var.slug}-revalidation-seeder"
   retention_in_days = 14
+
+  tags = var.tags
 }
 
 resource "aws_iam_role" "this" {
   name               = "${var.slug}RevalidationSeederRole"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
+
+  tags = var.tags
 }
 
 data "aws_iam_policy_document" "assume_role" {
@@ -44,6 +48,8 @@ data "aws_iam_policy_document" "permission" {
 resource "aws_iam_policy" "this" {
   name   = "${var.slug}RevalidationSeederPolicy"
   policy = data.aws_iam_policy_document.permission.json
+
+  tags = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "this" {
@@ -71,6 +77,8 @@ resource "aws_lambda_function" "this" {
       CACHE_DYNAMO_TABLE = var.table_name
     }
   }
+
+  tags = var.tags
 
   depends_on = [aws_cloudwatch_log_group.this]
 }

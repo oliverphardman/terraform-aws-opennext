@@ -113,13 +113,13 @@ module "terranext" {
   static_asset_cache_config    = "public,max-age=0,s-maxage=31536000,must-revalidate"
 
   static_paths = [
-    "/favicon.ico",
-    "/icon.svg",
-    "/icon.png",
     "/llms.txt",
     "/llms-full.txt",
-    "/.well-known/*",
-    "/images/*",
-    "/fonts/*",
+    "/.well-known/*"
   ]
+
+  tags = {
+    Project     = "My Website"
+    Environment = "Production"
+  }
 }

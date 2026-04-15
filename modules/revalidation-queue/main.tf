@@ -9,10 +9,14 @@ resource "aws_sqs_queue" "this" {
   receive_wait_time_seconds         = 20
   kms_master_key_id                 = local.kms_key_arn
   kms_data_key_reuse_period_seconds = 300
+
+  tags = var.tags
 }
 
 resource "aws_lambda_event_source_mapping" "this" {
   event_source_arn = aws_sqs_queue.this.arn
   function_name    = var.revalidation_function_arn
   batch_size       = 5
+
+  tags = var.tags
 }

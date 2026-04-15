@@ -10,6 +10,8 @@ module "assets" {
 
   assets_path               = "${local.opennext_abs_path}/assets"
   static_asset_cache_config = var.static_asset_cache_config
+
+  tags = var.tags
 }
 
 resource "aws_dynamodb_table" "cache" {
@@ -54,6 +56,8 @@ resource "aws_dynamodb_table" "cache" {
   point_in_time_recovery {
     enabled = true
   }
+
+  tags = var.tags
 }
 
 module "revalidation_seeder" {
@@ -64,6 +68,8 @@ module "revalidation_seeder" {
   output_dir = "${local.opennext_abs_path}/.build/"
   table_name = aws_dynamodb_table.cache.name
   table_arn  = aws_dynamodb_table.cache.arn
+
+  tags = var.tags
 }
 
 module "server_function" {
@@ -108,6 +114,8 @@ module "server_function" {
       resources = [aws_dynamodb_table.cache.arn, "${aws_dynamodb_table.cache.arn}/index/*"]
     }
   ]
+
+  tags = var.tags
 }
 
 module "image_optimization_function" {
@@ -132,6 +140,8 @@ module "image_optimization_function" {
       resources = [module.assets.assets_bucket.arn, "${module.assets.assets_bucket.arn}/*"]
     }
   ]
+
+  tags = var.tags
 }
 
 module "revalidation_function" {
@@ -173,6 +183,8 @@ module "revalidation_function" {
       resources = [aws_dynamodb_table.cache.arn, "${aws_dynamodb_table.cache.arn}/index/*"]
     }
   ]
+
+  tags = var.tags
 }
 
 module "revalidation_queue" {
@@ -182,6 +194,8 @@ module "revalidation_queue" {
 
   aws_account_id            = data.aws_caller_identity.current.account_id
   revalidation_function_arn = module.revalidation_function.lambda_function.arn
+
+  tags = var.tags
 }
 
 module "warmer_function" {
@@ -207,6 +221,8 @@ module "warmer_function" {
       resources = [module.server_function.lambda_function.arn]
     }
   ]
+
+  tags = var.tags
 }
 
 resource "aws_cloudwatch_event_rule" "warmer" {
@@ -214,6 +230,8 @@ resource "aws_cloudwatch_event_rule" "warmer" {
 
   name                = "${var.slug}WarmerScheduledRule"
   schedule_expression = "rate(5 minutes)"
+
+  tags = var.tags
 }
 
 resource "aws_cloudwatch_event_target" "warmer" {
@@ -258,6 +276,8 @@ module "cloudfront" {
     server_function             = "${module.server_function.lambda_function_url.url_id}.lambda-url.${var.aws_region}.on.aws"
     image_optimization_function = "${module.image_optimization_function.lambda_function_url.url_id}.lambda-url.${var.aws_region}.on.aws"
   }
+
+  tags = var.tags
 }
 
 resource "aws_lambda_permission" "server" {

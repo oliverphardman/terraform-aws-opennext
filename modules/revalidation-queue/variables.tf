@@ -18,3 +18,9 @@ variable "revalidation_function_arn" {
   type        = string
   description = "The ARN of the revalidation Lambda function"
 }
+
+variable "tags" {
+  type        = map(string)
+  description = "Tags to apply to all resources."
+  default     = {}
+}

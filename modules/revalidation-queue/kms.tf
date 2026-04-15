@@ -12,6 +12,8 @@ resource "aws_kms_key" "this" {
 
   policy              = data.aws_iam_policy_document.this[0].json
   enable_key_rotation = true
+
+  tags = var.tags
 }
 
 data "aws_iam_policy_document" "this" {

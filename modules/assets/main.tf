@@ -144,4 +144,5 @@ resource "aws_s3_object" "this" {
   content_type  = lookup(local.content_type_lookup, split(".", each.value)[length(split(".", each.value)) - 1], "text/plain")
 
   depends_on = [aws_s3_bucket.this]
+  tags       = var.tags
 }

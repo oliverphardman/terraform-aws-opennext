@@ -103,3 +103,9 @@ variable "enable_www_alias" {
   description = "Whether to create an additional alias with the www prefix (e.g. www.example.com) and a corresponding Route 53 record if hosted_zone_id is provided."
   default     = true
 }
+
+variable "tags" {
+  type        = map(string)
+  description = "Tags to apply to all resources."
+  default     = {}
+}
