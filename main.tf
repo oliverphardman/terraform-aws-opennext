@@ -8,7 +8,7 @@ module "assets" {
   aws_region                   = var.aws_region
   use_account_regional_buckets = var.use_account_regional_buckets
 
-  assets_path               = "${local.opennext_abs_path}/assets"
+  assets_path               = "${local.opennext_root_build_path}/assets"
   static_asset_cache_config = var.static_asset_cache_config
 
   tags = var.tags

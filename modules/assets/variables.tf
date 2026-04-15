@@ -21,12 +21,12 @@ variable "use_account_regional_buckets" {
 
 variable "assets_path" {
   type        = string
-  description = "The path of the open-next static assets"
+  description = "The path of the OpenNext assets build output directory"
 }
 
-variable "static_asset_cache_config" {
+variable "cache_path" {
   type        = string
-  description = "Static asset cache config"
+  description = "The path of the OpenNext cache build output directory"
 }
 
 variable "logging_config" {

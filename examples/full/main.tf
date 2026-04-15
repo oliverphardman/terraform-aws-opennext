@@ -110,7 +110,6 @@ module "terranext" {
   warmer_function_enabled      = true
   enable_www_alias             = true
   use_account_regional_buckets = true
-  static_asset_cache_config    = "public,max-age=0,s-maxage=31536000,must-revalidate"
 
   static_paths = [
     "/llms.txt",

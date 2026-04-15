@@ -89,12 +89,6 @@ variable "create_dns_records" {
   }
 }
 
-variable "static_asset_cache_config" {
-  type        = string
-  description = "The static asset cache configuration."
-  default     = "public,max-age=0,s-maxage=31536000,must-revalidate"
-}
-
 variable "opennext_build_path" {
   type        = string
   description = "The path to the OpenNext build output directory."
