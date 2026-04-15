@@ -4,7 +4,7 @@
 
 # TerraNext
 
-TerraNext is an opinionated Terraform module designed to make it easy for you to host your Next.js app on AWS, without breaking the bank on compute.
+TerraNext is an opinionated Terraform module designed to make it easy for you to host your Next.js app on AWS. Because it uses OpenNext, it's entirely serverless, so it's extremely cost effective and easy to maintain.
 
 Simply use [Terraform](https://developer.hashicorp.com/terraform) to define any supporting infrastructure you require, such as your domain or WAF configuration, then include the TerraNext module to get started. Build your app using [OpenNext](https://opennext.js.org/) and Terraform will spin up the cloud resources you need to host it. TerraNext is available from the [Terraform Registry](https://registry.terraform.io/modules/TerraNext-Dev/opennext/aws).
 
@@ -94,8 +94,8 @@ CloudFront automatically serves both `example.com` and `www.example.com`, redire
 
 ## How it works
 
-1. You build your Next.js app with OpenNext (`npx open-next build`), which outputs Lambda-compatible bundles and static assets
-2. TerraNext deploys each bundle as an ARM64 Lambda function
+1. Build your Next.js app with OpenNext (`npx open-next build`), which outputs Lambda-compatible bundles and static assets
+2. TerraNext deploys each function build by OpenNext as a Lambda function
 3. Static assets are uploaded to S3
 4. CloudFront routes requests to the right origin based on path patterns:
    - `/_next/static/*`, `/static/*`, and configured static paths go to S3
