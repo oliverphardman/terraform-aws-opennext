@@ -82,6 +82,7 @@ TerraNext provides full coverage of the [OpenNext recommended AWS architecture](
 | `tags`                                    | `map(string)`                                | `{}`                    | Additional tags to apply to all resources                                                                                                                                                      |
 | `runtime_iam_execution_policy_statements` | `list(object({effect, actions, resources}))` | `[]`                    | Additional IAM policy statements to attach to the server function execution role, allowing it to access other AWS resources if needed                                                          |
 | `cdn_price_class`                         | `string`                                     | `"PriceClass_All"`      | The CloudFront price class to use for the distribution. This determines the maximum price tier for serving content. Valid values are `PriceClass_100`, `PriceClass_200`, and `PriceClass_All`. |
+| `cdn_logging_enabled`                     | `bool`                                       | `false`                 | Whether to enable CloudFront access logging. This will create an S3 bucket for storing the logs, and grant CloudFront permission to write to it.                                               |
 
 ## Outputs
 
