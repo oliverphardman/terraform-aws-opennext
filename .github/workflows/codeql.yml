@@ -25,7 +25,12 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        language: ["javascript-typescript", "actions"]
+        include:
+          - language: javascript-typescript
+            config: |
+              paths-ignore:
+                - .github
+          - language: actions
 
     steps:
       - name: Checkout
@@ -40,6 +45,7 @@ jobs:
         uses: github/codeql-action/init@c10b8064de6f491fea524254123dbe5e09572f13 # v4.35.1
         with:
           languages: ${{ matrix.language }}
+          config: ${{ matrix.config }}
 
       - name: Analyze
         id: analyze
