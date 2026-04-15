@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/TerraNext-Dev/terraform-aws-opennext/compare/v1.2.0...v2.0.0) (2026-04-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* new variables, removed bucket logging ([#17](https://github.com/TerraNext-Dev/terraform-aws-opennext/issues/17))
+
+### Features
+
+* new variables, removed bucket logging ([#17](https://github.com/TerraNext-Dev/terraform-aws-opennext/issues/17)) ([d31e37b](https://github.com/TerraNext-Dev/terraform-aws-opennext/commit/d31e37b341bfb71efb566397627e33ed5b7f455e))
+
 ## [1.2.0](https://github.com/TerraNext-Dev/terraform-aws-opennext/compare/v1.1.3...v1.2.0) (2026-04-14)
 
 
