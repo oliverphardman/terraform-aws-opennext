@@ -29,15 +29,6 @@ variable "cache_path" {
   description = "The path of the OpenNext cache build output directory"
 }
 
-variable "logging_config" {
-  description = "S3 access logging configuration. When set, access logs are written to the specified bucket and prefix."
-  type = object({
-    target_bucket = string
-    target_prefix = string
-  })
-  default = null
-}
-
 variable "replication_configuration" {
   description = "Replication Configuration for the S3 bucket"
   default     = null

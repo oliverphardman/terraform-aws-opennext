@@ -8,8 +8,8 @@ module "assets" {
   aws_region                   = var.aws_region
   use_account_regional_buckets = var.use_account_regional_buckets
 
-  assets_path               = "${local.opennext_root_build_path}/assets"
-  static_asset_cache_config = var.static_asset_cache_config
+  assets_path = "${local.opennext_root_build_path}/assets"
+  cache_path  = "${local.opennext_root_build_path}/cache"
 
   tags = var.tags
 }
@@ -64,8 +64,8 @@ module "revalidation_seeder" {
   source = "./modules/revalidation-seeder"
 
   slug       = var.slug
-  source_dir = "${local.opennext_abs_path}/dynamodb-provider"
-  output_dir = "${local.opennext_abs_path}/.build/"
+  source_dir = "${local.opennext_root_build_path}/dynamodb-provider"
+  output_dir = "${local.opennext_root_build_path}/.build/"
   table_name = aws_dynamodb_table.cache.name
   table_arn  = aws_dynamodb_table.cache.arn
 
@@ -80,8 +80,8 @@ module "server_function" {
   memory_size = 512
   streaming   = var.server_streaming
 
-  source_dir = "${local.opennext_abs_path}/server-functions/default"
-  output_dir = "${local.opennext_abs_path}/.build/"
+  source_dir = "${local.opennext_root_build_path}/server-functions/default"
+  output_dir = "${local.opennext_root_build_path}/.build/"
 
   environment_variables = merge({
     CACHE_BUCKET_NAME         = module.assets.assets_bucket.bucket
@@ -125,8 +125,8 @@ module "image_optimization_function" {
   description = "Next.js Image Optimization"
   memory_size = 512
 
-  source_dir = "${local.opennext_abs_path}/image-optimization-function/"
-  output_dir = "${local.opennext_abs_path}/.build/"
+  source_dir = "${local.opennext_root_build_path}/image-optimization-function/"
+  output_dir = "${local.opennext_root_build_path}/.build/"
 
   environment_variables = {
     BUCKET_NAME       = module.assets.assets_bucket.bucket
@@ -151,8 +151,8 @@ module "revalidation_function" {
   description = "Next.js ISR Revalidation Function"
   memory_size = 128
 
-  source_dir = "${local.opennext_abs_path}/revalidation-function/"
-  output_dir = "${local.opennext_abs_path}/.build/"
+  source_dir = "${local.opennext_root_build_path}/revalidation-function/"
+  output_dir = "${local.opennext_root_build_path}/.build/"
 
   environment_variables = {
     CACHE_BUCKET_NAME       = module.assets.assets_bucket.bucket
@@ -206,8 +206,8 @@ module "warmer_function" {
   description = "Next.js Warmer Function"
   memory_size = 128
 
-  source_dir = "${local.opennext_abs_path}/warmer-function/"
-  output_dir = "${local.opennext_abs_path}/.build/"
+  source_dir = "${local.opennext_root_build_path}/warmer-function/"
+  output_dir = "${local.opennext_root_build_path}/.build/"
 
   environment_variables = {
     FUNCTION_NAME = module.server_function.lambda_function.function_name
