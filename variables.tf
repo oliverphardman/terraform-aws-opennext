@@ -1,10 +1,10 @@
 variable "name" {
-  description = "The name of the application, used as a suffix for resources"
+  description = "The name of the application, used as a suffix for resources."
   type        = string
 }
 
 variable "slug" {
-  description = "The slug for the application, used as a prefix for resources"
+  description = "The slug for the application, used as a prefix for resources."
   type        = string
 }
 
@@ -25,13 +25,13 @@ variable "acm_arn" {
 }
 
 variable "waf_arn" {
-  description = "The ARN of the WAF to use for the CloudFront distribution"
+  description = "The ARN of the WAF to use for the CloudFront distribution."
   type        = string
   default     = null
 }
 
 variable "aws_region" {
-  description = "The AWS region to deploy to"
+  description = "The AWS region to deploy to."
   type        = string
 }
 
@@ -42,32 +42,42 @@ variable "use_account_regional_buckets" {
 }
 
 variable "runtime_environment_variables" {
-  description = "Environment variables configured on the OpenNext server function"
+  description = "Environment variables configured on the OpenNext server function."
   type        = map(string)
   default     = {}
 }
 
 variable "hosted_zone_id" {
   type        = string
-  description = "The Route 53 hosted zone ID. If provided, A and AAAA records are created for the deployment domain."
+  description = "The Route 53 hosted zone ID."
   default     = null
+
+  validation {
+    condition     = !(var.hosted_zone_id != null && var.deployment_domain == "")
+    error_message = "hosted_zone_id cannot be provided when deployment_domain is empty"
+  }
 }
 
 variable "create_dns_records" {
   type        = bool
   description = "Whether to create Route 53 DNS records. Set to true when providing hosted_zone_id."
   default     = false
+
+  validation {
+    condition     = !(var.create_dns_records && var.hosted_zone_id == null)
+    error_message = "create_dns_records cannot be true when hosted_zone_id is null"
+  }
 }
 
 variable "static_asset_cache_config" {
   type        = string
-  description = "Static asset cache config"
+  description = "The static asset cache configuration."
   default     = "public,max-age=0,s-maxage=31536000,must-revalidate"
 }
 
 variable "opennext_build_path" {
   type        = string
-  description = "The path to the folder containing the .open-next build output"
+  description = "The path to the folder containing the .open-next build output."
 }
 
 #variable "server_streaming" {
