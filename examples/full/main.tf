@@ -103,6 +103,7 @@ module "terranext" {
   waf_arn             = aws_wafv2_web_acl.this.arn
   cdn_price_class     = "PriceClass_All"
   cdn_logging_enabled = true
+  cache_pitr_enabled  = true
 
   runtime_environment_variables = {
     DATABASE_URL     = "postgresql://localhost:5432/mydb"

@@ -54,7 +54,7 @@ resource "aws_dynamodb_table" "cache" {
   }
 
   point_in_time_recovery {
-    enabled = true
+    enabled = var.cache_pitr_enabled
   }
 
   tags = var.tags
