@@ -101,6 +101,7 @@ module "terranext" {
   hosted_zone_id      = data.aws_route53_zone.this.zone_id
   create_dns_records  = true
   waf_arn             = aws_wafv2_web_acl.this.arn
+  cdn_price_class     = "PriceClass_All"
 
   runtime_environment_variables = {
     DATABASE_URL     = "postgresql://localhost:5432/mydb"

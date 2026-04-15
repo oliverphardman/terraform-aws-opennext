@@ -267,6 +267,7 @@ module "cloudfront" {
   assets_origin_access_control_id = module.assets.cloudfront_origin_access_control.id
   assets_bucket_name              = module.assets.assets_bucket.bucket
   server_function_role_arn        = module.server_function.lambda_role.arn
+  price_class                     = var.cdn_price_class
 
   server_function_oac_id             = module.server_function.cloudfront_origin_access_control.id
   image_optimization_function_oac_id = module.image_optimization_function.cloudfront_origin_access_control.id

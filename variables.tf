@@ -112,6 +112,12 @@ variable "enable_www_alias" {
   default     = true
 }
 
+variable "cdn_price_class" {
+  type        = string
+  description = "The CloudFront price class to use for the distribution. This determines the maximum price tier for serving content. Valid values are `PriceClass_100`, `PriceClass_200`, and `PriceClass_All`."
+  default     = "PriceClass_All"
+}
+
 variable "tags" {
   type        = map(string)
   description = "Tags to apply to all resources."
