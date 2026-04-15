@@ -92,7 +92,7 @@ module "server_function" {
     REVALIDATION_QUEUE_REGION = var.aws_region
   }, var.runtime_environment_variables)
 
-  iam_policy_statements = [
+  iam_policy_statements = concat([
     {
       effect    = "Allow"
       actions   = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject", "s3:ListBucket"]
@@ -113,7 +113,7 @@ module "server_function" {
       actions   = ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem", "dynamodb:Query", "dynamodb:Scan", "dynamodb:BatchWriteItem"]
       resources = [aws_dynamodb_table.cache.arn, "${aws_dynamodb_table.cache.arn}/index/*"]
     }
-  ]
+  ], var.runtime_iam_execution_policy_statements)
 
   tags = var.tags
 }
@@ -133,13 +133,13 @@ module "image_optimization_function" {
     BUCKET_KEY_PREFIX = "_assets"
   }
 
-  iam_policy_statements = [
+  iam_policy_statements = concat([
     {
       effect    = "Allow"
       actions   = ["s3:ListBucket", "s3:GetObject"]
       resources = [module.assets.assets_bucket.arn, "${module.assets.assets_bucket.arn}/*"]
     }
-  ]
+  ], var.image_optimization_iam_execution_policy_statements)
 
   tags = var.tags
 }
