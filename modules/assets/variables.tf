@@ -21,21 +21,12 @@ variable "use_account_regional_buckets" {
 
 variable "assets_path" {
   type        = string
-  description = "The path of the open-next static assets"
+  description = "The path of the OpenNext assets build output directory"
 }
 
-variable "static_asset_cache_config" {
+variable "cache_path" {
   type        = string
-  description = "Static asset cache config"
-}
-
-variable "logging_config" {
-  description = "S3 access logging configuration. When set, access logs are written to the specified bucket and prefix."
-  type = object({
-    target_bucket = string
-    target_prefix = string
-  })
-  default = null
+  description = "The path of the OpenNext cache build output directory"
 }
 
 variable "replication_configuration" {
@@ -55,4 +46,10 @@ variable "replication_configuration" {
       })
     }))
   })
+}
+
+variable "tags" {
+  type        = map(string)
+  description = "Tags to apply to all resources."
+  default     = {}
 }

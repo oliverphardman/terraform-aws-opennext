@@ -22,3 +22,9 @@ variable "table_arn" {
   type        = string
   description = "The ARN of the DynamoDB cache table to seed"
 }
+
+variable "tags" {
+  type        = map(string)
+  description = "Tags to apply to all resources."
+  default     = {}
+}

@@ -1,8 +1,11 @@
 locals {
   content_type_lookup = {
     css   = "text/css"
+    otf   = "font/otf"
+    woff  = "font/woff"
     woff2 = "font/woff2"
-    js    = "text/javascript"
+    ttf   = "font/ttf"
+    js    = "application/javascript"
     svg   = "image/svg+xml"
     ico   = "image/x-icon"
     html  = "text/html"
@@ -11,6 +14,7 @@ locals {
     png   = "image/png"
     jpg   = "image/jpeg"
     jpeg  = "image/jpeg"
+    webp  = "image/webp"
   }
 }
 
@@ -78,15 +82,6 @@ resource "aws_s3_bucket_replication_configuration" "this" {
   depends_on = [aws_s3_bucket_versioning.this]
 }
 
-resource "aws_s3_bucket_logging" "this" {
-  count = var.logging_config != null ? 1 : 0
-
-  bucket = aws_s3_bucket.this.bucket
-
-  target_bucket = var.logging_config.target_bucket
-  target_prefix = var.logging_config.target_prefix
-}
-
 resource "aws_s3_bucket_lifecycle_configuration" "this" {
   bucket = aws_s3_bucket.this.bucket
 
@@ -133,15 +128,28 @@ resource "aws_cloudfront_origin_access_control" "this" {
   signing_protocol                  = "sigv4"
 }
 
-resource "aws_s3_object" "this" {
+resource "aws_s3_object" "assets" {
   for_each = fileset(var.assets_path, "**")
 
-  bucket        = aws_s3_bucket.this.bucket
-  key           = "_assets/${each.value}"
-  source        = "${var.assets_path}/${each.value}"
-  source_hash   = filemd5("${var.assets_path}/${each.value}")
-  cache_control = length(regexall(".*(_next).*$", each.value)) > 0 ? "public,max-age=31536000,immutable" : var.static_asset_cache_config
-  content_type  = lookup(local.content_type_lookup, split(".", each.value)[length(split(".", each.value)) - 1], "text/plain")
+  bucket       = aws_s3_bucket.this.bucket
+  key          = "_assets/${each.value}"
+  source       = "${var.assets_path}/${each.value}"
+  source_hash  = filemd5("${var.assets_path}/${each.value}")
+  content_type = lookup(local.content_type_lookup, split(".", each.value)[length(split(".", each.value)) - 1], "text/plain")
 
   depends_on = [aws_s3_bucket.this]
+  tags       = var.tags
+}
+
+resource "aws_s3_object" "cache" {
+  for_each = fileset(var.cache_path, "**")
+
+  bucket       = aws_s3_bucket.this.bucket
+  key          = "_cache/${each.value}"
+  source       = "${var.cache_path}/${each.value}"
+  source_hash  = filemd5("${var.cache_path}/${each.value}")
+  content_type = lookup(local.content_type_lookup, split(".", each.value)[length(split(".", each.value)) - 1], "text/plain")
+
+  depends_on = [aws_s3_bucket.this]
+  tags       = var.tags
 }

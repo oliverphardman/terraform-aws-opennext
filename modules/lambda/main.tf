@@ -5,6 +5,8 @@ locals {
 resource "aws_cloudwatch_log_group" "this" {
   name              = "/aws/lambda/${local.function_name}"
   retention_in_days = 365
+
+  tags = var.tags
 }
 
 resource "aws_lambda_function" "this" {
@@ -33,6 +35,8 @@ resource "aws_lambda_function" "this" {
   environment {
     variables = var.environment_variables
   }
+
+  tags = var.tags
 
   depends_on = [aws_cloudwatch_log_group.this]
 }

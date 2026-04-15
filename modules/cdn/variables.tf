@@ -223,3 +223,9 @@ variable "create_dns_records" {
   type        = bool
   default     = false
 }
+
+variable "tags" {
+  type        = map(string)
+  description = "Tags to apply to all resources."
+  default     = {}
+}

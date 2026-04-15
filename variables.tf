@@ -47,6 +47,26 @@ variable "runtime_environment_variables" {
   default     = {}
 }
 
+variable "runtime_iam_execution_policy_statements" {
+  description = "Additional IAM policy statements to attach to the OpenNext server function execution role. This can be used to grant permissions for accessing other AWS resources from the server function."
+  type = list(object({
+    effect    = string
+    actions   = list(string)
+    resources = list(string)
+  }))
+  default = []
+}
+
+variable "image_optimization_iam_execution_policy_statements" {
+  description = "Additional IAM policy statements to attach to the OpenNext image optimization function execution role. This can be used to grant permissions for accessing other AWS resources from the image optimization function."
+  type = list(object({
+    effect    = string
+    actions   = list(string)
+    resources = list(string)
+  }))
+  default = []
+}
+
 variable "hosted_zone_id" {
   type        = string
   description = "The Route 53 hosted zone ID."
@@ -69,22 +89,10 @@ variable "create_dns_records" {
   }
 }
 
-variable "static_asset_cache_config" {
-  type        = string
-  description = "The static asset cache configuration."
-  default     = "public,max-age=0,s-maxage=31536000,must-revalidate"
-}
-
 variable "opennext_build_path" {
   type        = string
-  description = "The path to the folder containing the .open-next build output."
+  description = "The path to the OpenNext build output directory."
 }
-
-#variable "server_streaming" {
-#  type        = bool
-#  description = "Whether to enable response streaming on the server function. Enables faster Time to First Byte for server-rendered pages."
-#  default     = false
-#}
 
 variable "warmer_function_enabled" {
   type        = bool
@@ -102,4 +110,16 @@ variable "enable_www_alias" {
   type        = bool
   description = "Whether to create an additional alias with the www prefix (e.g. www.example.com) and a corresponding Route 53 record if hosted_zone_id is provided."
   default     = true
+}
+
+variable "cdn_price_class" {
+  type        = string
+  description = "The CloudFront price class to use for the distribution. This determines the maximum price tier for serving content. Valid values are `PriceClass_100`, `PriceClass_200`, and `PriceClass_All`."
+  default     = "PriceClass_All"
+}
+
+variable "tags" {
+  type        = map(string)
+  description = "Tags to apply to all resources."
+  default     = {}
 }

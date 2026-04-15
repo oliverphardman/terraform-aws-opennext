@@ -101,6 +101,7 @@ module "terranext" {
   hosted_zone_id      = data.aws_route53_zone.this.zone_id
   create_dns_records  = true
   waf_arn             = aws_wafv2_web_acl.this.arn
+  cdn_price_class     = "PriceClass_All"
 
   runtime_environment_variables = {
     DATABASE_URL     = "postgresql://localhost:5432/mydb"
@@ -110,16 +111,15 @@ module "terranext" {
   warmer_function_enabled      = true
   enable_www_alias             = true
   use_account_regional_buckets = true
-  static_asset_cache_config    = "public,max-age=0,s-maxage=31536000,must-revalidate"
 
   static_paths = [
-    "/favicon.ico",
-    "/icon.svg",
-    "/icon.png",
     "/llms.txt",
     "/llms-full.txt",
-    "/.well-known/*",
-    "/images/*",
-    "/fonts/*",
+    "/.well-known/*"
   ]
+
+  tags = {
+    Project     = "My Website"
+    Environment = "Production"
+  }
 }

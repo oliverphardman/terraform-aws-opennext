@@ -4,7 +4,7 @@
 
 # TerraNext
 
-TerraNext is an opinionated Terraform module designed to make it easy for you to host your Next.js app on AWS, without breaking the bank on compute.
+TerraNext is an opinionated Terraform module designed to make it easy for you to host your Next.js app on AWS. Because it uses OpenNext, it's entirely serverless, so it's extremely cost effective and easy to maintain.
 
 Simply use [Terraform](https://developer.hashicorp.com/terraform) to define any supporting infrastructure you require, such as your domain or WAF configuration, then include the TerraNext module to get started. Build your app using [OpenNext](https://opennext.js.org/) and Terraform will spin up the cloud resources you need to host it. TerraNext is available from the [Terraform Registry](https://registry.terraform.io/modules/TerraNext-Dev/opennext/aws).
 
@@ -68,18 +68,20 @@ TerraNext provides full coverage of the [OpenNext recommended AWS architecture](
 
 ### Optional
 
-| Name                            | Type           | Default                  | Description                                                                                                                                                 |
-| ------------------------------- | -------------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `hosted_zone_id`                | `string`       | `null`                   | (Recommended) Route 53 hosted zone ID. When provided, A and AAAA records are created for the deployment domain - required if `create_dns_records` is `true` |
-| `create_dns_records`            | `bool`         | `false`                  | (Recommended) Whether to create DNS records on your Route 53 hosted zone - requires `hosted_zone_id` to be set                                              |
-| `waf_arn`                       | `string`       | `null`                   | ARN of a WAF WebACL to associate with the CloudFront distribution                                                                                           |
-| `runtime_environment_variables` | `map(string)`  | `{}`                     | Additional environment variables for the server Lambda function                                                                                             |
-| `warmer_function_enabled`       | `bool`         | `true`                   | Whether to create a warmer function to reduce cold starts                                                                                                   |
-| `use_account_regional_buckets`  | `bool`         | `true`                   | Use account-regional S3 namespace to avoid global naming conflicts                                                                                          |
-| `static_paths`                  | `list(string)` | `["/favicon.ico", ...]`  | Static asset paths to cache via CloudFront                                                                                                                  |
-| `static_asset_cache_config`     | `string`       | `"public,max-age=0,..."` | Cache-Control header for static assets                                                                                                                      |
-| `server_streaming`              | `bool`         | `true`                   | Enable response streaming on the server function for faster TTFB                                                                                            |
-| `enable_www_alias`              | `bool`         | `true`                   | Create an additional `www` alias and redirect to the apex domain                                                                                            |
+| Name                                      | Type                                         | Default                 | Description                                                                                                                                                                                    |
+| ----------------------------------------- | -------------------------------------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `hosted_zone_id`                          | `string`                                     | `null`                  | (Recommended) Route 53 hosted zone ID. When provided, A and AAAA records are created for the deployment domain - required if `create_dns_records` is `true`                                    |
+| `create_dns_records`                      | `bool`                                       | `false`                 | (Recommended) Whether to create DNS records on your Route 53 hosted zone - requires `hosted_zone_id` to be set                                                                                 |
+| `waf_arn`                                 | `string`                                     | `null`                  | ARN of a WAF WebACL to associate with the CloudFront distribution                                                                                                                              |
+| `runtime_environment_variables`           | `map(string)`                                | `{}`                    | Additional environment variables for the server Lambda function                                                                                                                                |
+| `warmer_function_enabled`                 | `bool`                                       | `true`                  | Whether to create a warmer function to reduce cold starts                                                                                                                                      |
+| `use_account_regional_buckets`            | `bool`                                       | `true`                  | Use account-regional S3 namespace to avoid global naming conflicts                                                                                                                             |
+| `static_paths`                            | `list(string)`                               | `["/favicon.ico", ...]` | Static asset paths to cache via CloudFront                                                                                                                                                     |
+| `server_streaming`                        | `bool`                                       | `true`                  | Enable response streaming on the server function for faster TTFB                                                                                                                               |
+| `enable_www_alias`                        | `bool`                                       | `true`                  | Create an additional `www` alias and redirect to the apex domain                                                                                                                               |
+| `tags`                                    | `map(string)`                                | `{}`                    | Additional tags to apply to all resources                                                                                                                                                      |
+| `runtime_iam_execution_policy_statements` | `list(object({effect, actions, resources}))` | `[]`                    | Additional IAM policy statements to attach to the server function execution role, allowing it to access other AWS resources if needed                                                          |
+| `cdn_price_class`                         | `string`                                     | `"PriceClass_All"`      | The CloudFront price class to use for the distribution. This determines the maximum price tier for serving content. Valid values are `PriceClass_100`, `PriceClass_200`, and `PriceClass_All`. |
 
 ## Outputs
 
@@ -92,8 +94,8 @@ CloudFront automatically serves both `example.com` and `www.example.com`, redire
 
 ## How it works
 
-1. You build your Next.js app with OpenNext (`npx open-next build`), which outputs Lambda-compatible bundles and static assets
-2. TerraNext deploys each bundle as an ARM64 Lambda function
+1. Build your Next.js app with OpenNext (`npx open-next build`), which outputs Lambda-compatible bundles and static assets
+2. TerraNext deploys each function build by OpenNext as a Lambda function
 3. Static assets are uploaded to S3
 4. CloudFront routes requests to the right origin based on path patterns:
    - `/_next/static/*`, `/static/*`, and configured static paths go to S3

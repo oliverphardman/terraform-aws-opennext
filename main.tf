@@ -8,8 +8,10 @@ module "assets" {
   aws_region                   = var.aws_region
   use_account_regional_buckets = var.use_account_regional_buckets
 
-  assets_path               = "${local.opennext_abs_path}/assets"
-  static_asset_cache_config = var.static_asset_cache_config
+  assets_path = "${local.opennext_root_build_path}/assets"
+  cache_path  = "${local.opennext_root_build_path}/cache"
+
+  tags = var.tags
 }
 
 resource "aws_dynamodb_table" "cache" {
@@ -54,16 +56,20 @@ resource "aws_dynamodb_table" "cache" {
   point_in_time_recovery {
     enabled = true
   }
+
+  tags = var.tags
 }
 
 module "revalidation_seeder" {
   source = "./modules/revalidation-seeder"
 
   slug       = var.slug
-  source_dir = "${local.opennext_abs_path}/dynamodb-provider"
-  output_dir = "${local.opennext_abs_path}/.build/"
+  source_dir = "${local.opennext_root_build_path}/dynamodb-provider"
+  output_dir = "${local.opennext_root_build_path}/.build/"
   table_name = aws_dynamodb_table.cache.name
   table_arn  = aws_dynamodb_table.cache.arn
+
+  tags = var.tags
 }
 
 module "server_function" {
@@ -74,8 +80,8 @@ module "server_function" {
   memory_size = 512
   streaming   = var.server_streaming
 
-  source_dir = "${local.opennext_abs_path}/server-functions/default"
-  output_dir = "${local.opennext_abs_path}/.build/"
+  source_dir = "${local.opennext_root_build_path}/server-functions/default"
+  output_dir = "${local.opennext_root_build_path}/.build/"
 
   environment_variables = merge({
     CACHE_BUCKET_NAME         = module.assets.assets_bucket.bucket
@@ -86,7 +92,7 @@ module "server_function" {
     REVALIDATION_QUEUE_REGION = var.aws_region
   }, var.runtime_environment_variables)
 
-  iam_policy_statements = [
+  iam_policy_statements = concat([
     {
       effect    = "Allow"
       actions   = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject", "s3:ListBucket"]
@@ -107,7 +113,9 @@ module "server_function" {
       actions   = ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem", "dynamodb:Query", "dynamodb:Scan", "dynamodb:BatchWriteItem"]
       resources = [aws_dynamodb_table.cache.arn, "${aws_dynamodb_table.cache.arn}/index/*"]
     }
-  ]
+  ], var.runtime_iam_execution_policy_statements)
+
+  tags = var.tags
 }
 
 module "image_optimization_function" {
@@ -117,21 +125,23 @@ module "image_optimization_function" {
   description = "Next.js Image Optimization"
   memory_size = 512
 
-  source_dir = "${local.opennext_abs_path}/image-optimization-function/"
-  output_dir = "${local.opennext_abs_path}/.build/"
+  source_dir = "${local.opennext_root_build_path}/image-optimization-function/"
+  output_dir = "${local.opennext_root_build_path}/.build/"
 
   environment_variables = {
     BUCKET_NAME       = module.assets.assets_bucket.bucket
     BUCKET_KEY_PREFIX = "_assets"
   }
 
-  iam_policy_statements = [
+  iam_policy_statements = concat([
     {
       effect    = "Allow"
       actions   = ["s3:ListBucket", "s3:GetObject"]
       resources = [module.assets.assets_bucket.arn, "${module.assets.assets_bucket.arn}/*"]
     }
-  ]
+  ], var.image_optimization_iam_execution_policy_statements)
+
+  tags = var.tags
 }
 
 module "revalidation_function" {
@@ -141,8 +151,8 @@ module "revalidation_function" {
   description = "Next.js ISR Revalidation Function"
   memory_size = 128
 
-  source_dir = "${local.opennext_abs_path}/revalidation-function/"
-  output_dir = "${local.opennext_abs_path}/.build/"
+  source_dir = "${local.opennext_root_build_path}/revalidation-function/"
+  output_dir = "${local.opennext_root_build_path}/.build/"
 
   environment_variables = {
     CACHE_BUCKET_NAME       = module.assets.assets_bucket.bucket
@@ -173,6 +183,8 @@ module "revalidation_function" {
       resources = [aws_dynamodb_table.cache.arn, "${aws_dynamodb_table.cache.arn}/index/*"]
     }
   ]
+
+  tags = var.tags
 }
 
 module "revalidation_queue" {
@@ -182,6 +194,8 @@ module "revalidation_queue" {
 
   aws_account_id            = data.aws_caller_identity.current.account_id
   revalidation_function_arn = module.revalidation_function.lambda_function.arn
+
+  tags = var.tags
 }
 
 module "warmer_function" {
@@ -192,8 +206,8 @@ module "warmer_function" {
   description = "Next.js Warmer Function"
   memory_size = 128
 
-  source_dir = "${local.opennext_abs_path}/warmer-function/"
-  output_dir = "${local.opennext_abs_path}/.build/"
+  source_dir = "${local.opennext_root_build_path}/warmer-function/"
+  output_dir = "${local.opennext_root_build_path}/.build/"
 
   environment_variables = {
     FUNCTION_NAME = module.server_function.lambda_function.function_name
@@ -207,6 +221,8 @@ module "warmer_function" {
       resources = [module.server_function.lambda_function.arn]
     }
   ]
+
+  tags = var.tags
 }
 
 resource "aws_cloudwatch_event_rule" "warmer" {
@@ -214,6 +230,8 @@ resource "aws_cloudwatch_event_rule" "warmer" {
 
   name                = "${var.slug}WarmerScheduledRule"
   schedule_expression = "rate(5 minutes)"
+
+  tags = var.tags
 }
 
 resource "aws_cloudwatch_event_target" "warmer" {
@@ -249,6 +267,7 @@ module "cloudfront" {
   assets_origin_access_control_id = module.assets.cloudfront_origin_access_control.id
   assets_bucket_name              = module.assets.assets_bucket.bucket
   server_function_role_arn        = module.server_function.lambda_role.arn
+  price_class                     = var.cdn_price_class
 
   server_function_oac_id             = module.server_function.cloudfront_origin_access_control.id
   image_optimization_function_oac_id = module.image_optimization_function.cloudfront_origin_access_control.id
@@ -258,6 +277,8 @@ module "cloudfront" {
     server_function             = "${module.server_function.lambda_function_url.url_id}.lambda-url.${var.aws_region}.on.aws"
     image_optimization_function = "${module.image_optimization_function.lambda_function_url.url_id}.lambda-url.${var.aws_region}.on.aws"
   }
+
+  tags = var.tags
 }
 
 resource "aws_lambda_permission" "server" {
