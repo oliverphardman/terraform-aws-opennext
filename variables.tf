@@ -118,6 +118,12 @@ variable "cdn_price_class" {
   default     = "PriceClass_All"
 }
 
+variable "cache_pitr_enabled" {
+  type        = bool
+  description = "Whether to enable point-in-time recovery for the CloudFront cache DynamoDB table. This allows for recovery of cached data in the event of accidental deletion or other issues, but will incur additional cost."
+  default     = false
+}
+
 variable "tags" {
   type        = map(string)
   description = "Tags to apply to all resources."
