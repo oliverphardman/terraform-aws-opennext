@@ -124,6 +124,12 @@ variable "cache_pitr_enabled" {
   default     = false
 }
 
+variable "upload_assets" {
+  type        = bool
+  description = "Whether to upload assets to S3. Set to false if you have already uploaded assets or want to manage them separately."
+  default     = true
+}
+
 variable "tags" {
   type        = map(string)
   description = "Tags to apply to all resources."
