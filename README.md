@@ -6,7 +6,7 @@
 
 TerraNext is an opinionated Terraform module designed to make it easy for you to host your Next.js app on AWS. Because it uses OpenNext, it's entirely serverless, so it's extremely cost effective and easy to maintain.
 
-Simply use [Terraform](https://developer.hashicorp.com/terraform) to define any supporting infrastructure you require, such as your domain or WAF configuration, then include the TerraNext module to get started. Build your app using [OpenNext](https://opennext.js.org/) and Terraform will spin up the cloud resources you need to host it. TerraNext is available from the [Terraform Registry](https://registry.terraform.io/modules/TerraNext-Dev/opennext/aws).
+Simply use [Terraform](https://developer.hashicorp.com/terraform) to define any supporting infrastructure you require, such as your domain or WAF configuration, then include the TerraNext module to get started. Build your app using [OpenNext](https://opennext.js.org/) and Terraform will spin up the cloud resources you need to host it. TerraNext is available from the [Terraform Registry](https://registry.terraform.io/modules/TerraNext-Dev/opennext/aws) and the [OpenTofu Registry](https://search.opentofu.org/module/terranext-dev/opennext/aws/latest).
 
 This module is based on the excellent work by [NHS England](https://github.com/orgs/nhsengland) on [terraform-aws-opennext](https://github.com/nhs-england-tools/terraform-aws-opennext). Their module has not been maintained for a long time, but **TerraNext supports v6 of the AWS Terraform provider**, utilizes new features in AWS services and is far simpler to use.
 
