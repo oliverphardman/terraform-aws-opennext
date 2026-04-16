@@ -1,0 +1,30 @@
+misconfigurations:
+  - id: AVD-AWS-0132
+    statement: "The data stored in the buckets is not sensitive enough to warrant customer-managed keys."
+  - id: AVD-AWS-0093
+    paths:
+      - "infra/workspace/web-application/s3.tf"
+    statement: "Public access is required for this bucket."
+  - id: AVD-AWS-0088
+    paths:
+      - "infra/workspace/web-application/s3.tf"
+    statement: "The bucket is intentionally public and therefore does not require encryption."
+  - id: AVD-AWS-0087
+    paths:
+      - "infra/workspace/web-application/s3.tf"
+    statement: "Public access is required for this bucket."
+  - id: AVD-AWS-0090
+    paths:
+      - "infra/workspace/database/main.tf"
+    statement: "The bucket is intentionally public and therefore does not require encryption."
+  - id: AVD-AWS-0098
+  - id: AVD-AWS-0025
+  - id: AVD-AWS-0017
+  - id: AVD-AWS-0024
+  - id: AVD-AWS-0025
+  - id: AVD-AWS-0089
+  - id: AVD-AWS-0132
+  - id: AVD-AWS-0010
+  - id: AVD-AWS-0090
+  - id: AVD-AWS-0017
+  - id: AVD-AWS-0066
