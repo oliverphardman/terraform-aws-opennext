@@ -210,8 +210,10 @@ module "warmer_function" {
   output_dir = "${local.opennext_root_build_path}/.build/"
 
   environment_variables = {
-    FUNCTION_NAME = module.server_function.lambda_function.function_name
-    CONCURRENCY   = 1
+    WARM_PARAMS = jsonencode([{
+      function    = module.server_function.lambda_function.function_name
+      concurrency = 1
+    }])
   }
 
   iam_policy_statements = [
