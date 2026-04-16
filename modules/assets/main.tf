@@ -129,7 +129,7 @@ resource "aws_cloudfront_origin_access_control" "this" {
 }
 
 resource "aws_s3_object" "assets" {
-  for_each = var.upload_assets ? fileset(var.assets_path, "**") : toset([])
+  for_each = var.upload_files ? fileset(var.assets_path, "**") : toset([])
 
   bucket       = aws_s3_bucket.this.bucket
   key          = "_assets/${each.value}"
@@ -142,7 +142,7 @@ resource "aws_s3_object" "assets" {
 }
 
 resource "aws_s3_object" "cache" {
-  for_each = var.upload_assets ? fileset(var.cache_path, "**") : toset([])
+  for_each = var.upload_files ? fileset(var.cache_path, "**") : toset([])
 
   bucket       = aws_s3_bucket.this.bucket
   key          = "_cache/${each.value}"

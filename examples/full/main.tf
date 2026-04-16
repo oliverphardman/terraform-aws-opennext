@@ -104,7 +104,7 @@ module "terranext" {
   cdn_price_class     = "PriceClass_All"
   cdn_logging_enabled = true
   cache_pitr_enabled  = true
-  upload_assets       = true
+  upload_files        = true
 
   runtime_environment_variables = {
     DATABASE_URL     = "postgresql://localhost:5432/mydb"
