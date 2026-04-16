@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/TerraNext-Dev/terraform-aws-opennext/compare/v2.0.0...v2.0.1) (2026-04-16)
+
+
+### Bug Fixes
+
+* DynamoDB schema type for revalidatedAt field ([#20](https://github.com/TerraNext-Dev/terraform-aws-opennext/issues/20)) ([bc5c87a](https://github.com/TerraNext-Dev/terraform-aws-opennext/commit/bc5c87ac15e541eafd01f4204b84d0062f438477))
+
 ## [2.0.0](https://github.com/TerraNext-Dev/terraform-aws-opennext/compare/v1.2.0...v2.0.0) (2026-04-15)
 
 
