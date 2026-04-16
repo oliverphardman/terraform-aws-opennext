@@ -48,6 +48,12 @@ variable "replication_configuration" {
   })
 }
 
+variable "upload_files" {
+  type        = bool
+  description = "Whether to upload files to S3. If you apply with this set to true and later change it to false, Terraform may plan to delete the previously-managed S3 objects. To stop managing existing uploaded assets and cache without deleting them, remove those objects from Terraform state before setting this to false."
+  default     = true
+}
+
 variable "tags" {
   type        = map(string)
   description = "Tags to apply to all resources."

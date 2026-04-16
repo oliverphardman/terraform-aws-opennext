@@ -11,6 +11,8 @@ module "assets" {
   assets_path = "${local.opennext_root_build_path}/assets"
   cache_path  = "${local.opennext_root_build_path}/cache"
 
+  upload_files = var.upload_files
+
   tags = var.tags
 }
 
