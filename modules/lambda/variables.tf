@@ -59,6 +59,10 @@ variable "url_authorization_type" {
   type        = string
   description = "The authorization type for the Lambda function URL. Valid values are 'NONE' and 'AWS_IAM'"
   default     = "NONE"
+  validation {
+    condition     = contains(["NONE", "AWS_IAM"], var.url_authorization_type)
+    error_message = "Valid values for url_authorization_type are: `NONE` and `AWS_IAM`."
+  }
 }
 
 variable "iam_policy_statements" {
