@@ -55,6 +55,12 @@ variable "reserved_concurrent_executions" {
   default     = -1
 }
 
+variable "url_authorization_type" {
+  type        = string
+  description = "The authorization type for the Lambda function URL. Valid values are 'NONE' and 'AWS_IAM'"
+  default     = "NONE"
+}
+
 variable "iam_policy_statements" {
   type = list(object({
     effect    = string

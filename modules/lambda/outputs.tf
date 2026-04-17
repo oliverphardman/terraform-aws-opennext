@@ -8,11 +8,6 @@ output "lambda_function_url" {
   value       = aws_lambda_function_url.this
 }
 
-output "cloudfront_origin_access_control" {
-  description = "The CloudFront Origin Access Control for the Lambda Function URL"
-  value       = aws_cloudfront_origin_access_control.this
-}
-
 output "lambda_role" {
   description = "The IAM role attached to the Lambda function"
   value       = aws_iam_role.this
