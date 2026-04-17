@@ -43,15 +43,24 @@ resource "aws_lambda_function" "this" {
 
 resource "aws_lambda_function_url" "this" {
   function_name      = aws_lambda_function.this.function_name
-  authorization_type = "AWS_IAM"
+  authorization_type = var.url_authorization_type
   invoke_mode        = var.streaming ? "RESPONSE_STREAM" : "BUFFERED"
 }
 
-resource "aws_cloudfront_origin_access_control" "this" {
-  name                              = "${var.slug}-lambda-oac"
-  description                       = "CloudFront OAC for ${aws_lambda_function.this.function_name}"
-  origin_access_control_origin_type = "lambda"
-  signing_behavior                  = "always"
-  signing_protocol                  = "sigv4"
+resource "aws_lambda_permission" "this" {
+  count         = var.url_authorization_type == "NONE" ? 1 : 0
+  statement_id  = "FunctionURLAllowInvokeAction"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.this.function_name
+  principal     = "*"
 }
 
+resource "aws_lambda_permission" "this_url" {
+  count                  = var.url_authorization_type == "NONE" ? 1 : 0
+  statement_id           = "FunctionURLAllowPublicAccess"
+  function_name          = aws_lambda_function.this.function_name
+  principal              = "*"
+  function_url_auth_type = "NONE"
+
+  action = "lambda:InvokeFunctionUrl"
+}

@@ -52,16 +52,6 @@ variable "origins" {
   description = "Origin domain names for CloudFront"
 }
 
-variable "server_function_oac_id" {
-  type        = string
-  description = "The CloudFront OAC ID for the server Lambda function"
-}
-
-variable "image_optimization_function_oac_id" {
-  type        = string
-  description = "The CloudFront OAC ID for the image optimization Lambda function"
-}
-
 variable "server_function_role_arn" {
   type        = string
   description = "The IAM role ARN of the Next.js server Lambda function"

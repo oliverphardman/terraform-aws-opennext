@@ -243,9 +243,8 @@ resource "aws_cloudfront_distribution" "this" {
 
   # Server Function Origin
   origin {
-    domain_name              = var.origins.server_function
-    origin_id                = local.server_origin_id
-    origin_access_control_id = var.server_function_oac_id
+    domain_name = var.origins.server_function
+    origin_id   = local.server_origin_id
 
     custom_origin_config {
       http_port              = 80
@@ -258,9 +257,8 @@ resource "aws_cloudfront_distribution" "this" {
 
   # Image Optimization Function Origin
   origin {
-    domain_name              = var.origins.image_optimization_function
-    origin_id                = local.image_optimization_origin_id
-    origin_access_control_id = var.image_optimization_function_oac_id
+    domain_name = var.origins.image_optimization_function
+    origin_id   = local.image_optimization_origin_id
 
     custom_origin_config {
       http_port              = 80
