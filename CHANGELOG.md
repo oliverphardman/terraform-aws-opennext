@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.1.0](https://github.com/TerraNext-Dev/terraform-aws-opennext/compare/v2.0.1...v2.1.0) (2026-04-17)
+
+
+### Features
+
+* upload assets variable ([#25](https://github.com/TerraNext-Dev/terraform-aws-opennext/issues/25)) ([4b1f221](https://github.com/TerraNext-Dev/terraform-aws-opennext/commit/4b1f221736fcd6ea194cf2809a09eba3b6bbc356))
+
+
+### Bug Fixes
+
+* Lambda OAC invocation authorization ([#27](https://github.com/TerraNext-Dev/terraform-aws-opennext/issues/27)) ([a04f7ae](https://github.com/TerraNext-Dev/terraform-aws-opennext/commit/a04f7ae4e8778c07a56ed70bd3f1bbf4f6b273b4))
+* WARM_PARAMS values no longer use legacy syntax ([#23](https://github.com/TerraNext-Dev/terraform-aws-opennext/issues/23)) ([942afcb](https://github.com/TerraNext-Dev/terraform-aws-opennext/commit/942afcb28e8efd39007b513d46788a6d5a8d4e10))
+
 ## [2.0.1](https://github.com/TerraNext-Dev/terraform-aws-opennext/compare/v2.0.0...v2.0.1) (2026-04-16)
 
 
