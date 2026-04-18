@@ -1,13 +1,21 @@
 # General
 
 variable "name" {
-  description = "The name of the application."
+  description = "The friendly name of the application (with spaces)."
   type        = string
+  validation {
+    condition     = length(var.name) <= 32
+    error_message = "Name must be 32 characters or fewer."
+  }
 }
 
 variable "slug" {
   description = "The slug for the application in PascalCase."
   type        = string
+  validation {
+    condition     = length(var.slug) <= 32 && can(regex("^[A-Z][a-zA-Z0-9]+$", var.slug))
+    error_message = "Slug must be in PascalCase (e.g. MyApp) and 32 characters or fewer."
+  }
 }
 
 variable "aws_region" {
