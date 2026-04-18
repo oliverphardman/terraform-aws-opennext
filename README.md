@@ -12,7 +12,7 @@ This module is based on the excellent work by [NHS England](https://github.com/o
 
 [TerraNext's website](https://terranext.dev) is hosted using TerraNext! Feel free to explore the [source code](https://github.com/TerraNext-Dev/terranext-site).
 
-> Upgrading from v2? Check the [Migration Guide](./docs/V3-MIGRATION.MD) for info on breaking changes.
+> Upgrading from v2? Check the [Migration Guide](./docs/V3-MIGRATION.md) for info on breaking changes.
 
 ## Quick Start
 
@@ -42,18 +42,18 @@ module "terranext" {
 
 TerraNext provides full coverage of the [OpenNext recommended AWS architecture](https://opennext.js.org/aws/architecture):
 
-| Component                   | Architecture layer | TerraNext |
-| --- | --- | --- |
-| CloudFront CDN cache        | Core               | CloudFront distribution with HTTP/2 and HTTP/3, HSTS, CORS, and OAC-authenticated origins |
-| Server Function             | Core               | Lambda with Function URL. This is your main Next.js server |
+| Component                   | Architecture layer | TerraNext                                                                                                             |
+| --------------------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| CloudFront CDN cache        | Core               | CloudFront distribution with HTTP/2 and HTTP/3, HSTS, CORS, and OAC-authenticated origins                             |
+| Server Function             | Core               | Lambda with Function URL. This is your main Next.js server                                                            |
 | Asset Files                 | Core               | S3 bucket with versioning, encryption, and lifecycle policies. Routes `/_next/static/*` and configurable static paths |
-| Image Optimization Function | Core               | Lambda with Function URL. Routes `/_next/image*` |
-| Revalidation Queue          | ISR Revalidation   | SQS FIFO queue with KMS encryption and content-based deduplication |
-| Revalidation Function       | ISR Revalidation   | Lambda triggered by SQS. Updates cache in S3 and DynamoDB |
-| Cache Files                 | ISR Revalidation   | Stored in the same S3 assets bucket under the `_cache` prefix |
-| Cache Table                 | ISR Revalidation   | DynamoDB table storing cache metadata and tag-to-path mappings, seeded at deploy time |
-| Warmer Function             | Warmer (optional)  | Lambda invoked every 5 minutes by EventBridge to keep the server function warm |
-| Route 53                    | DNS (optional)     | A and AAAA alias records for your custom domain and `www` subdomain |
+| Image Optimization Function | Core               | Lambda with Function URL. Routes `/_next/image*`                                                                      |
+| Revalidation Queue          | ISR Revalidation   | SQS FIFO queue with KMS encryption and content-based deduplication                                                    |
+| Revalidation Function       | ISR Revalidation   | Lambda triggered by SQS. Updates cache in S3 and DynamoDB                                                             |
+| Cache Files                 | ISR Revalidation   | Stored in the same S3 assets bucket under the `_cache` prefix                                                         |
+| Cache Table                 | ISR Revalidation   | DynamoDB table storing cache metadata and tag-to-path mappings, seeded at deploy time                                 |
+| Warmer Function             | Warmer (optional)  | Lambda invoked every 5 minutes by EventBridge to keep the server function warm                                        |
+| Route 53                    | DNS (optional)     | A and AAAA alias records for your custom domain and `www` subdomain                                                   |
 
 ## Variables
 
