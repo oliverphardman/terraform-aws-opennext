@@ -184,9 +184,9 @@ resource "aws_cloudfront_response_headers_policy" "cdn" {
         for_each = toset(var.cdn_custom_headers)
 
         content {
-          header   = items.header
-          override = items.override
-          value    = items.value
+          header   = items.value.header
+          override = items.value.override
+          value    = items.value.value
         }
       }
     }
