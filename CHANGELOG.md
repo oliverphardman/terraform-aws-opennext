@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/TerraNext-Dev/terraform-aws-opennext/compare/v2.1.0...v3.0.0) (2026-04-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* v3 ([#28](https://github.com/TerraNext-Dev/terraform-aws-opennext/issues/28))
+
+### Features
+
+* v3 ([#28](https://github.com/TerraNext-Dev/terraform-aws-opennext/issues/28)) ([192600d](https://github.com/TerraNext-Dev/terraform-aws-opennext/commit/192600d752dd763b3b4a0b905eb1bceeaf526dca))
+
 ## [2.1.0](https://github.com/TerraNext-Dev/terraform-aws-opennext/compare/v2.0.1...v2.1.0) (2026-04-17)
 
 
