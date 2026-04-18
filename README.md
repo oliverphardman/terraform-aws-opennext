@@ -43,11 +43,11 @@ TerraNext provides full coverage of the [OpenNext recommended AWS architecture](
 | Component                   | Architecture layer | TerraNext                                                                                                             |
 | --------------------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------- |
 | CloudFront CDN cache        | Core               | CloudFront distribution with HTTP/2 and HTTP/3, HSTS, CORS, and OAC-authenticated origins                             |
-| Server Function             | Core               | ARM64 Lambda (Node.js 24.x) with Function URL. Routes `/*`, `/_next/data/*`, and `/api/*`                             |
+| Server Function             | Core               | Lambda (Node.js 24.x) with Function URL. Routes `/*`, `/_next/data/*`, and `/api/*`                                   |
 | Asset Files                 | Core               | S3 bucket with versioning, encryption, and lifecycle policies. Routes `/_next/static/*` and configurable static paths |
-| Image Optimization Function | Core               | ARM64 Lambda with Function URL. Routes `/_next/image*`                                                                |
+| Image Optimization Function | Core               | Lambda with Function URL. Routes `/_next/image*`                                                                      |
 | Revalidation Queue          | ISR Revalidation   | SQS FIFO queue with KMS encryption and content-based deduplication                                                    |
-| Revalidation Function       | ISR Revalidation   | ARM64 Lambda triggered by SQS. Updates cache in S3 and DynamoDB                                                       |
+| Revalidation Function       | ISR Revalidation   | Lambda triggered by SQS. Updates cache in S3 and DynamoDB                                                             |
 | Cache Files                 | ISR Revalidation   | Stored in the same S3 assets bucket under the `_cache` prefix                                                         |
 | Cache Table                 | ISR Revalidation   | DynamoDB table storing cache metadata and tag-to-path mappings, seeded at deploy time                                 |
 | Warmer Function             | Warmer (optional)  | Lambda invoked every 5 minutes by EventBridge to keep the server function warm                                        |
@@ -57,34 +57,75 @@ TerraNext provides full coverage of the [OpenNext recommended AWS architecture](
 
 ### Required
 
-| Name                  | Type     | Description                                                   |
-| --------------------- | -------- | ------------------------------------------------------------- |
-| `name`                | `string` | The name of the application, used as a suffix for resources   |
-| `slug`                | `string` | A URL-safe identifier used as a prefix for all resource names |
-| `aws_region`          | `string` | The AWS region to deploy to                                   |
-| `opennext_build_path` | `string` | Path to the folder containing the `.open-next` build output   |
-| `deployment_domain`   | `string` | The deployment domain for the application                     |
-| `acm_arn`             | `string` | ARN of an ACM certificate for the CloudFront distribution     |
+| Name                  | Type     | Description                                                 |
+| --------------------- | -------- | ----------------------------------------------------------- |
+| `name`                | `string` | The name of the application                                 |
+| `slug`                | `string` | The slug for the application in PascalCase                  |
+| `aws_region`          | `string` | The AWS region to deploy to                                 |
+| `opennext_build_path` | `string` | Path to the folder containing the `.open-next` build output |
+| `deployment_domain`   | `string` | The deployment domain for the application                   |
+| `acm_arn`             | `string` | ARN of an ACM certificate for the CloudFront distribution   |
 
-### Optional
+### Domain & DNS
 
-| Name                                      | Type                                         | Default                 | Description                                                                                                                                                                                                                                                                                                        |
-| ----------------------------------------- | -------------------------------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `hosted_zone_id`                          | `string`                                     | `null`                  | (Recommended) Route 53 hosted zone ID. When provided, A and AAAA records are created for the deployment domain - required if `create_dns_records` is `true`                                                                                                                                                        |
-| `create_dns_records`                      | `bool`                                       | `false`                 | (Recommended) Whether to create DNS records on your Route 53 hosted zone - requires `hosted_zone_id` to be set                                                                                                                                                                                                     |
-| `waf_arn`                                 | `string`                                     | `null`                  | ARN of a WAF WebACL to associate with the CloudFront distribution                                                                                                                                                                                                                                                  |
-| `runtime_environment_variables`           | `map(string)`                                | `{}`                    | Additional environment variables for the server Lambda function                                                                                                                                                                                                                                                    |
-| `warmer_function_enabled`                 | `bool`                                       | `true`                  | Whether to create a warmer function to reduce cold starts                                                                                                                                                                                                                                                          |
-| `use_account_regional_buckets`            | `bool`                                       | `true`                  | Use account-regional S3 namespace to avoid global naming conflicts                                                                                                                                                                                                                                                 |
-| `static_paths`                            | `list(string)`                               | `["/favicon.ico", ...]` | Static asset paths to cache via CloudFront                                                                                                                                                                                                                                                                         |
-| `server_streaming`                        | `bool`                                       | `false`                 | Enable response streaming on the server function for faster TTFB                                                                                                                                                                                                                                                   |
-| `enable_www_alias`                        | `bool`                                       | `true`                  | Create an additional `www` alias and redirect to the apex domain                                                                                                                                                                                                                                                   |
-| `tags`                                    | `map(string)`                                | `{}`                    | Additional tags to apply to all resources                                                                                                                                                                                                                                                                          |
-| `runtime_iam_execution_policy_statements` | `list(object({effect, actions, resources}))` | `[]`                    | Additional IAM policy statements to attach to the server function execution role, allowing it to access other AWS resources if needed                                                                                                                                                                              |
-| `cdn_price_class`                         | `string`                                     | `"PriceClass_All"`      | The CloudFront price class to use for the distribution. This determines the maximum price tier for serving content. Valid values are `PriceClass_100`, `PriceClass_200`, and `PriceClass_All`.                                                                                                                     |
-| `cdn_logging_enabled`                     | `bool`                                       | `false`                 | Whether to enable CloudFront access logging. This will create an S3 bucket for storing the logs, and grant CloudFront permission to write to it.                                                                                                                                                                   |
-| `cache_pitr_enabled`                      | `bool`                                       | `false`                 | Whether to enable point-in-time recovery for the CloudFront cache DynamoDB table. This allows for recovery of cached data in the event of accidental deletion or other issues, but will incur additional cost.                                                                                                     |
-| `upload_files`                            | `bool`                                       | `true`                  | Whether to upload files to S3. If you apply with this set to true and later change it to false, Terraform may plan to delete the previously-managed S3 objects. To stop managing existing uploaded assets and cache without deleting them, remove those objects from Terraform state before setting this to false. |
+| Name                 | Type     | Default | Description                                                                 |
+| -------------------- | -------- | ------- | --------------------------------------------------------------------------- |
+| `hosted_zone_id`     | `string` | `null`  | Route 53 hosted zone ID. Required if `create_dns_records` is `true`         |
+| `create_dns_records` | `bool`   | `false` | Whether to create Route 53 DNS records. Requires `hosted_zone_id` to be set |
+| `enable_www_alias`   | `bool`   | `true`  | Create an additional `www` alias and redirect to the apex domain            |
+
+### CDN
+
+| Name                                       | Type                                      | Default            | Description                                                                                       |
+| ------------------------------------------ | ----------------------------------------- | ------------------ | ------------------------------------------------------------------------------------------------- |
+| `cdn_price_class`                          | `string`                                  | `"PriceClass_All"` | CloudFront price class. Valid values: `PriceClass_100`, `PriceClass_200`, `PriceClass_All`        |
+| `waf_arn`                                  | `string`                                  | `null`             | ARN of a WAF WebACL to associate with the CloudFront distribution                                 |
+| `static_paths`                             | `list(string)`                            | `[]`               | Static asset paths to cache via CloudFront                                                        |
+| `cdn_custom_headers`                       | `list(object({header, override, value}))` | `[]`               | Custom headers to add to the CloudFront response headers policy                                   |
+| `cdn_cors`                                 | `object`                                  | See below          | CORS configuration for the CloudFront distribution                                                |
+| `cdn_hsts`                                 | `object`                                  | See below          | HSTS configuration for the CloudFront distribution                                                |
+| `cdn_origin_request_policy`                | `object`                                  | `null`             | Custom origin request policy. When `null`, the managed `AllViewerExceptHostHeader` policy is used |
+| `cdn_cache_policy`                         | `object`                                  | See below          | Cache policy configuration for the CloudFront distribution                                        |
+| `cdn_geo_restriction`                      | `object({restriction_type, locations})`   | No restriction     | Georestriction configuration for the CloudFront distribution                                      |
+| `cdn_remove_headers`                       | `object({items})`                         | `{items = []}`     | Response header removal configuration for the CloudFront distribution                             |
+| `cdn_create_invalidation_after_deployment` | `bool`                                    | `true`             | Whether to create a CloudFront invalidation for all paths after deployment                        |
+
+### Lambda Functions
+
+| Name                                                 | Type                                         | Default | Description                                                                         |
+| ---------------------------------------------------- | -------------------------------------------- | ------- | ----------------------------------------------------------------------------------- |
+| `server_streaming`                                   | `bool`                                       | `false` | Enable response streaming on the server function for faster TTFB                    |
+| `server_environment_variables`                       | `map(string)`                                | `{}`    | Additional environment variables for the server Lambda function                     |
+| `server_memory_size`                                 | `number`                                     | `512`   | Memory size (in MB) for the server Lambda function                                  |
+| `server_iam_execution_policy_statements`             | `list(object({effect, actions, resources}))` | `[]`    | Additional IAM policy statements for the server function execution role             |
+| `image_optimization_iam_execution_policy_statements` | `list(object({effect, actions, resources}))` | `[]`    | Additional IAM policy statements for the image optimization function execution role |
+| `warmer_function_enabled`                            | `bool`                                       | `true`  | Whether to create a warmer function to reduce cold starts                           |
+
+### Assets (S3)
+
+| Name                           | Type     | Default | Description                                                                                                                                                                                                                                                                                                  |
+| ------------------------------ | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `use_account_regional_buckets` | `bool`   | `true`  | Use account-regional S3 namespace to avoid global naming conflicts                                                                                                                                                                                                                                           |
+| `upload_files`                 | `bool`   | `true`  | Whether to upload files to S3. If you apply with this set to `true` and later change it to `false`, Terraform may plan to delete the previously-managed S3 objects. To stop managing existing uploaded files without deleting them, remove those objects from Terraform state before setting this to `false` |
+| `replication_configuration`    | `object` | `null`  | Replication configuration for the assets S3 bucket                                                                                                                                                                                                                                                           |
+
+### Cache (DynamoDB)
+
+| Name                 | Type   | Default | Description                                                                                       |
+| -------------------- | ------ | ------- | ------------------------------------------------------------------------------------------------- |
+| `cache_pitr_enabled` | `bool` | `false` | Whether to enable point-in-time recovery for the cache DynamoDB table. Will incur additional cost |
+
+### Revalidation Queue (SQS)
+
+| Name                             | Type     | Default | Description                                                                                           |
+| -------------------------------- | -------- | ------- | ----------------------------------------------------------------------------------------------------- |
+| `revalidation_queue_kms_key_arn` | `string` | `null`  | ARN of an existing KMS key for encrypting the revalidation SQS queue. If `null`, a new key is created |
+
+### General
+
+| Name   | Type          | Default | Description                    |
+| ------ | ------------- | ------- | ------------------------------ |
+| `tags` | `map(string)` | `{}`    | Tags to apply to all resources |
 
 ## Outputs
 
