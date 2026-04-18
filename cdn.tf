@@ -11,7 +11,7 @@ resource "aws_cloudfront_function" "host_header" {
   runtime = "cloudfront-js-2.0"
   comment = "Sets x-forwarded-host header required by OpenNext"
   publish = true
-  code    = file("${path.module}/host_header.js")
+  code    = file("${path.module}/hostHeader.js")
 
   lifecycle {
     create_before_destroy = true
