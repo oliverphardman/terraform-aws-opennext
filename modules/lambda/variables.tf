@@ -69,6 +69,12 @@ variable "iam_policy_statements" {
   default     = []
 }
 
+variable "create_function_url" {
+  type        = bool
+  description = "Whether to create a Lambda function URL"
+  default     = true
+}
+
 variable "streaming" {
   type        = bool
   description = "Whether to enable response streaming on the Lambda function URL"

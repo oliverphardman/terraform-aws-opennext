@@ -63,15 +63,42 @@ resource "aws_dynamodb_table" "cache" {
 }
 
 module "revalidation_seeder" {
-  source = "./modules/revalidation-seeder"
+  source = "./modules/lambda"
 
-  slug       = var.slug
+  function_name       = "${var.slug}RevalidationSeeder"
+  description         = "Seeds the DynamoDB cache table with OpenNext revalidation data"
+  memory_size         = 128
+  timeout             = 900
+  create_function_url = false
+
   source_dir = "${local.opennext_root_build_path}/dynamodb-provider"
   output_dir = "${local.opennext_root_build_path}/.build/"
-  table_name = aws_dynamodb_table.cache.name
-  table_arn  = aws_dynamodb_table.cache.arn
+
+  environment_variables = {
+    CACHE_DYNAMO_TABLE = aws_dynamodb_table.cache.name
+  }
+
+  iam_policy_statements = [
+    {
+      effect    = "Allow"
+      actions   = ["dynamodb:BatchWriteItem", "dynamodb:PutItem", "dynamodb:DescribeTable"]
+      resources = [aws_dynamodb_table.cache.arn]
+    }
+  ]
 
   tags = var.tags
+}
+
+resource "aws_lambda_invocation" "revalidation_seeder" {
+  function_name = module.revalidation_seeder.lambda_function.function_name
+
+  input = jsonencode({
+    RequestType = "Create"
+  })
+
+  triggers = {
+    redeployment = module.revalidation_seeder.lambda_function.source_code_hash
+  }
 }
 
 module "server_function" {
