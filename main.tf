@@ -1,21 +1,5 @@
 data "aws_caller_identity" "current" {}
 
-module "assets" {
-  source = "./modules/assets"
-
-  slug                         = var.slug
-  aws_account_id               = data.aws_caller_identity.current.account_id
-  aws_region                   = var.aws_region
-  use_account_regional_buckets = var.use_account_regional_buckets
-
-  assets_path = "${local.opennext_root_build_path}/assets"
-  cache_path  = "${local.opennext_root_build_path}/cache"
-
-  upload_files = var.upload_files
-
-  tags = var.tags
-}
-
 resource "aws_dynamodb_table" "cache" {
   name         = "${var.slug}Cache"
   billing_mode = "PAY_PER_REQUEST"
@@ -113,11 +97,11 @@ module "server_function" {
   output_dir = "${local.opennext_root_build_path}/.build/"
 
   environment_variables = merge({
-    CACHE_BUCKET_NAME         = module.assets.assets_bucket.bucket
+    CACHE_BUCKET_NAME         = aws_s3_bucket.assets.bucket
     CACHE_BUCKET_KEY_PREFIX   = "_cache"
     CACHE_BUCKET_REGION       = var.aws_region
     CACHE_DYNAMO_TABLE        = aws_dynamodb_table.cache.name
-    REVALIDATION_QUEUE_URL    = module.revalidation_queue.queue.url
+    REVALIDATION_QUEUE_URL    = aws_sqs_queue.revalidation.url
     REVALIDATION_QUEUE_REGION = var.aws_region
   }, var.runtime_environment_variables)
 
@@ -125,17 +109,17 @@ module "server_function" {
     {
       effect    = "Allow"
       actions   = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject", "s3:ListBucket"]
-      resources = [module.assets.assets_bucket.arn, "${module.assets.assets_bucket.arn}/*"]
+      resources = [aws_s3_bucket.assets.arn, "${aws_s3_bucket.assets.arn}/*"]
     },
     {
       effect    = "Allow"
       actions   = ["sqs:SendMessage"]
-      resources = [module.revalidation_queue.queue.arn]
+      resources = [aws_sqs_queue.revalidation.arn]
     },
     {
       effect    = "Allow"
       actions   = ["kms:GenerateDataKey", "kms:Decrypt"]
-      resources = [module.revalidation_queue.queue_kms_key.arn]
+      resources = [local.revalidation_kms_key_arn]
     },
     {
       effect    = "Allow"
@@ -158,7 +142,7 @@ module "image_optimization_function" {
   output_dir = "${local.opennext_root_build_path}/.build/"
 
   environment_variables = {
-    BUCKET_NAME       = module.assets.assets_bucket.bucket
+    BUCKET_NAME       = aws_s3_bucket.assets.bucket
     BUCKET_KEY_PREFIX = "_assets"
   }
 
@@ -166,7 +150,7 @@ module "image_optimization_function" {
     {
       effect    = "Allow"
       actions   = ["s3:ListBucket", "s3:GetObject"]
-      resources = [module.assets.assets_bucket.arn, "${module.assets.assets_bucket.arn}/*"]
+      resources = [aws_s3_bucket.assets.arn, "${aws_s3_bucket.assets.arn}/*"]
     }
   ], var.image_optimization_iam_execution_policy_statements)
 
@@ -184,7 +168,7 @@ module "revalidation_function" {
   output_dir = "${local.opennext_root_build_path}/.build/"
 
   environment_variables = {
-    CACHE_BUCKET_NAME       = module.assets.assets_bucket.bucket
+    CACHE_BUCKET_NAME       = aws_s3_bucket.assets.bucket
     CACHE_BUCKET_KEY_PREFIX = "_cache"
     CACHE_BUCKET_REGION     = var.aws_region
     CACHE_DYNAMO_TABLE      = aws_dynamodb_table.cache.name
@@ -194,17 +178,17 @@ module "revalidation_function" {
     {
       effect    = "Allow"
       actions   = ["sqs:ReceiveMessage", "sqs:DeleteMessage", "sqs:GetQueueAttributes"]
-      resources = [module.revalidation_queue.queue.arn]
+      resources = [aws_sqs_queue.revalidation.arn]
     },
     {
       effect    = "Allow"
       actions   = ["kms:Decrypt", "kms:DescribeKey"]
-      resources = [module.revalidation_queue.queue_kms_key.arn]
+      resources = [local.revalidation_kms_key_arn]
     },
     {
       effect    = "Allow"
       actions   = ["s3:ListBucket", "s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
-      resources = [module.assets.assets_bucket.arn, "${module.assets.assets_bucket.arn}/*"]
+      resources = [aws_s3_bucket.assets.arn, "${aws_s3_bucket.assets.arn}/*"]
     },
     {
       effect    = "Allow"
@@ -212,18 +196,6 @@ module "revalidation_function" {
       resources = [aws_dynamodb_table.cache.arn, "${aws_dynamodb_table.cache.arn}/index/*"]
     }
   ]
-
-  tags = var.tags
-}
-
-module "revalidation_queue" {
-  source = "./modules/revalidation-queue"
-
-  app_name = var.name
-  slug     = var.slug
-
-  aws_account_id            = data.aws_caller_identity.current.account_id
-  revalidation_function_arn = module.revalidation_function.lambda_function.arn
 
   tags = var.tags
 }
@@ -283,31 +255,4 @@ resource "aws_lambda_permission" "warmer" {
   function_name = module.warmer_function[0].lambda_function.function_name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.warmer[0].arn
-}
-
-module "cloudfront" {
-  source         = "./modules/cdn"
-  slug           = var.slug
-  aws_account_id = data.aws_caller_identity.current.account_id
-  aws_region     = var.aws_region
-
-  app_name                        = var.name
-  aliases                         = var.enable_www_alias ? [var.deployment_domain, "www.${var.deployment_domain}"] : [var.deployment_domain]
-  acm_certificate_arn             = var.acm_arn
-  assets_paths                    = var.static_paths
-  custom_waf                      = var.waf_arn != null ? { arn = var.waf_arn } : null
-  route53_hosted_zone_id          = var.hosted_zone_id
-  create_dns_records              = var.create_dns_records
-  assets_origin_access_control_id = module.assets.cloudfront_origin_access_control.id
-  assets_bucket_name              = module.assets.assets_bucket.bucket
-  server_function_role_arn        = module.server_function.lambda_role.arn
-  price_class                     = var.cdn_price_class
-
-  origins = {
-    assets_bucket               = module.assets.assets_bucket.bucket_regional_domain_name
-    server_function             = "${module.server_function.lambda_function_url.url_id}.lambda-url.${var.aws_region}.on.aws"
-    image_optimization_function = "${module.image_optimization_function.lambda_function_url.url_id}.lambda-url.${var.aws_region}.on.aws"
-  }
-
-  tags = var.tags
 }

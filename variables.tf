@@ -116,6 +116,162 @@ variable "cdn_price_class" {
   type        = string
   description = "The CloudFront price class to use for the distribution. This determines the maximum price tier for serving content. Valid values are `PriceClass_100`, `PriceClass_200`, and `PriceClass_All`."
   default     = "PriceClass_All"
+  validation {
+    condition     = contains(["PriceClass_200", "PriceClass_100", "PriceClass_All"], var.cdn_price_class)
+    error_message = "Valid values for cdn_price_class are: `PriceClass_200`, `PriceClass_100` and `PriceClass_All`."
+  }
+}
+
+variable "cdn_custom_headers" {
+  type = list(object({
+    header   = string
+    override = bool
+    value    = string
+  }))
+  description = "Custom headers to add to the CloudFront response headers policy."
+  default     = []
+}
+
+variable "cdn_cors" {
+  description = "CORS (Cross-Origin Resource Sharing) configuration for the CloudFront distribution."
+  type = object({
+    allow_credentials = bool
+    allow_headers     = list(string)
+    allow_methods     = list(string)
+    allow_origins     = list(string)
+    origin_override   = bool
+  })
+  default = {
+    allow_credentials = false
+    allow_headers     = ["*"]
+    allow_methods     = ["ALL"]
+    allow_origins     = ["*"]
+    origin_override   = true
+  }
+}
+
+variable "cdn_hsts" {
+  description = "HSTS (HTTP Strict Transport Security) configuration for the CloudFront distribution."
+  type = object({
+    access_control_max_age_sec = number
+    include_subdomains         = bool
+    override                   = bool
+    preload                    = bool
+  })
+  default = {
+    access_control_max_age_sec = 31536000
+    include_subdomains         = true
+    override                   = true
+    preload                    = true
+  }
+}
+
+variable "cdn_origin_request_policy" {
+  description = "Custom origin request policy for the CloudFront distribution. When null, the managed AllViewerExceptHostHeader policy is used."
+  type = object({
+    cookies_config = object({
+      cookie_behavior = string
+      items           = list(string)
+    })
+    headers_config = object({
+      header_behavior = string
+      items           = optional(list(string))
+    })
+    query_strings_config = object({
+      query_string_behavior = string
+      items                 = optional(list(string))
+    })
+  })
+  default = null
+}
+
+variable "cdn_cache_policy" {
+  description = "Cache policy configuration for the CloudFront distribution."
+  type = object({
+    default_ttl                   = number
+    min_ttl                       = number
+    max_ttl                       = number
+    enable_accept_encoding_gzip   = bool
+    enable_accept_encoding_brotli = bool
+    cookies_config = object({
+      cookie_behavior = string
+      items           = optional(list(string))
+    })
+    headers_config = object({
+      header_behavior = string
+      items           = optional(list(string))
+    })
+    query_strings_config = object({
+      query_string_behavior = string
+      items                 = optional(list(string))
+    })
+  })
+  default = {
+    default_ttl                   = 0
+    min_ttl                       = 0
+    max_ttl                       = 31536000
+    enable_accept_encoding_brotli = true
+    enable_accept_encoding_gzip   = true
+    cookies_config = {
+      cookie_behavior = "none"
+      items           = []
+    }
+    headers_config = {
+      header_behavior = "whitelist"
+      items           = []
+    }
+    query_strings_config = {
+      query_string_behavior = "all"
+      items                 = []
+    }
+  }
+}
+
+variable "cdn_geo_restriction" {
+  description = "The georestriction configuration for the CloudFront distribution."
+  type = object({
+    restriction_type = string
+    locations        = list(string)
+  })
+  default = {
+    restriction_type = "none"
+    locations        = []
+  }
+}
+
+variable "cdn_remove_headers" {
+  description = "Response header removal configuration for the CloudFront distribution."
+  type = object({
+    items = list(string)
+  })
+  default = {
+    items = []
+  }
+}
+
+variable "revalidation_queue_kms_key_arn" {
+  type        = string
+  description = "The ARN of an existing KMS key to use for encrypting the revalidation SQS queue. If null, a new KMS key will be created."
+  default     = null
+}
+
+variable "replication_configuration" {
+  description = "Replication configuration for the assets S3 bucket."
+  default     = null
+  type = object({
+    role = string
+    rules = list(object({
+      id     = string
+      status = string
+      filters = list(object({
+        prefix = string
+      }))
+      destination = object({
+        bucket        = string
+        storage_class = string
+      })
+    }))
+  })
 }
 
 variable "cache_pitr_enabled" {
