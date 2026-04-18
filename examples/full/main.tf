@@ -93,7 +93,7 @@ module "terranext" {
   version = "~> 1.0"
 
   name                = "My Website"
-  slug                = "my-website"
+  slug                = "MyWebsite"
   aws_region          = local.region
   opennext_build_path = "../.open-next"
   deployment_domain   = local.domain
@@ -102,11 +102,10 @@ module "terranext" {
   create_dns_records  = true
   waf_arn             = aws_wafv2_web_acl.this.arn
   cdn_price_class     = "PriceClass_All"
-  cdn_logging_enabled = true
   cache_pitr_enabled  = true
   upload_files        = true
 
-  runtime_environment_variables = {
+  server_environment_variables = {
     DATABASE_URL     = "postgresql://localhost:5432/mydb"
     NEXT_PUBLIC_SITE = "https://${local.domain}"
   }
