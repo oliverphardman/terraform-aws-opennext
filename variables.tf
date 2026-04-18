@@ -13,7 +13,15 @@ variable "slug" {
   description = "The slug for the application in PascalCase."
   type        = string
   validation {
-    condition     = length(var.slug) <= 32 && can(regex("^[A-Z][a-zA-Z0-9]+$", var.slug))
+    condition     = length(var.slug) > 0
+    error_message = "Slug must not be empty."
+  }
+  validation {
+    condition     = length(var.slug) <= 32
+    error_message = "Slug must be 32 characters or fewer."
+  }
+  validation {
+    condition     = can(regex("^[A-Z][a-zA-Z0-9]+$", var.slug))
     error_message = "Slug must be in PascalCase (e.g. MyApp) and 32 characters or fewer."
   }
 }
@@ -37,8 +45,13 @@ variable "tags" {
 # Domain & DNS
 
 variable "deployment_domain" {
-  description = "The deployment domain for the application. This must exist in Route 53. Leave blank to skip domain setup and use the default CloudFront domain."
+  description = "The deployment domain for the application. This must exist in Route 53."
   type        = string
+
+  validation {
+    condition     = trimspace(var.deployment_domain) != ""
+    error_message = "deployment_domain must not be empty."
+  }
 }
 
 variable "acm_arn" {
