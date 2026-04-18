@@ -1,33 +1,29 @@
+# General
+
 variable "name" {
-  description = "The name of the application, used as a suffix for resources."
+  description = "The friendly name of the application (with spaces)."
   type        = string
+  validation {
+    condition     = length(var.name) <= 32
+    error_message = "Name must be 32 characters or fewer."
+  }
 }
 
 variable "slug" {
-  description = "The slug for the application, used as a prefix for resources."
+  description = "The slug for the application in PascalCase."
   type        = string
-}
-
-variable "deployment_domain" {
-  description = "The deployment domain for the application. This must exist in Route 53. Leave blank to skip domain setup and use the default CloudFront domain."
-  type        = string
-}
-
-variable "server_streaming" {
-  description = "Whether to enable response streaming on the server function. Enables faster Time to First Byte for server-rendered pages."
-  type        = bool
-  default     = false
-}
-
-variable "acm_arn" {
-  description = "The ARN of an existing ACM certificate to use for the CloudFront distribution."
-  type        = string
-}
-
-variable "waf_arn" {
-  description = "The ARN of the WAF to use for the CloudFront distribution."
-  type        = string
-  default     = null
+  validation {
+    condition     = length(var.slug) > 0
+    error_message = "Slug must not be empty."
+  }
+  validation {
+    condition     = length(var.slug) <= 32
+    error_message = "Slug must be 32 characters or fewer."
+  }
+  validation {
+    condition     = can(regex("^[A-Z][a-zA-Z0-9]+$", var.slug))
+    error_message = "Slug must be in PascalCase (e.g. MyApp) and 32 characters or fewer."
+  }
 }
 
 variable "aws_region" {
@@ -35,36 +31,32 @@ variable "aws_region" {
   type        = string
 }
 
-variable "use_account_regional_buckets" {
-  type        = bool
-  description = "Whether S3 buckets should use account-regional namespace (BUCKET-ACCOUNTID-REGION-an) instead of global namespace. Account-regional is recommended to avoid naming conflicts."
-  default     = true
+variable "opennext_build_path" {
+  type        = string
+  description = "The path to the OpenNext build output directory."
 }
 
-variable "runtime_environment_variables" {
-  description = "Environment variables configured on the OpenNext server function."
+variable "tags" {
   type        = map(string)
+  description = "Tags to apply to all resources."
   default     = {}
 }
 
-variable "runtime_iam_execution_policy_statements" {
-  description = "Additional IAM policy statements to attach to the OpenNext server function execution role. This can be used to grant permissions for accessing other AWS resources from the server function."
-  type = list(object({
-    effect    = string
-    actions   = list(string)
-    resources = list(string)
-  }))
-  default = []
+# Domain & DNS
+
+variable "deployment_domain" {
+  description = "The deployment domain for the application. This must exist in Route 53."
+  type        = string
+
+  validation {
+    condition     = trimspace(var.deployment_domain) != ""
+    error_message = "deployment_domain must not be empty."
+  }
 }
 
-variable "image_optimization_iam_execution_policy_statements" {
-  description = "Additional IAM policy statements to attach to the OpenNext image optimization function execution role. This can be used to grant permissions for accessing other AWS resources from the image optimization function."
-  type = list(object({
-    effect    = string
-    actions   = list(string)
-    resources = list(string)
-  }))
-  default = []
+variable "acm_arn" {
+  description = "The ARN of an existing ACM certificate to use for the CloudFront distribution."
+  type        = string
 }
 
 variable "hosted_zone_id" {
@@ -89,9 +81,207 @@ variable "create_dns_records" {
   }
 }
 
-variable "opennext_build_path" {
+variable "enable_www_alias" {
+  type        = bool
+  description = "Whether to create an additional alias with the www prefix (e.g. www.example.com) and a corresponding Route 53 record if hosted_zone_id is provided."
+  default     = true
+}
+
+# CDN
+
+variable "cdn_price_class" {
   type        = string
-  description = "The path to the OpenNext build output directory."
+  description = "The CloudFront price class to use for the distribution. This determines the maximum price tier for serving content. Valid values are `PriceClass_100`, `PriceClass_200`, and `PriceClass_All`."
+  default     = "PriceClass_All"
+  validation {
+    condition     = contains(["PriceClass_200", "PriceClass_100", "PriceClass_All"], var.cdn_price_class)
+    error_message = "Valid values for cdn_price_class are: `PriceClass_200`, `PriceClass_100` and `PriceClass_All`."
+  }
+}
+
+variable "waf_arn" {
+  description = "The ARN of the WAF to use for the CloudFront distribution."
+  type        = string
+  default     = null
+}
+
+variable "static_paths" {
+  type        = list(string)
+  description = "List of static paths to be cached by CloudFront. These should correspond to the static assets generated by OpenNext."
+  default     = []
+}
+
+variable "cdn_custom_headers" {
+  type = list(object({
+    header   = string
+    override = bool
+    value    = string
+  }))
+  description = "Custom headers to add to the CloudFront response headers policy."
+  default     = []
+}
+
+variable "cdn_cors" {
+  description = "CORS (Cross-Origin Resource Sharing) configuration for the CloudFront distribution."
+  type = object({
+    allow_credentials = bool
+    allow_headers     = list(string)
+    allow_methods     = list(string)
+    allow_origins     = list(string)
+    origin_override   = bool
+  })
+  default = {
+    allow_credentials = false
+    allow_headers     = ["*"]
+    allow_methods     = ["ALL"]
+    allow_origins     = ["*"]
+    origin_override   = true
+  }
+}
+
+variable "cdn_hsts" {
+  description = "HSTS (HTTP Strict Transport Security) configuration for the CloudFront distribution."
+  type = object({
+    access_control_max_age_sec = number
+    include_subdomains         = bool
+    override                   = bool
+    preload                    = bool
+  })
+  default = {
+    access_control_max_age_sec = 31536000
+    include_subdomains         = true
+    override                   = true
+    preload                    = true
+  }
+}
+
+variable "cdn_origin_request_policy" {
+  description = "Custom origin request policy for the CloudFront distribution. When null, the managed AllViewerExceptHostHeader policy is used."
+  type = object({
+    cookies_config = object({
+      cookie_behavior = string
+      items           = list(string)
+    })
+    headers_config = object({
+      header_behavior = string
+      items           = optional(list(string))
+    })
+    query_strings_config = object({
+      query_string_behavior = string
+      items                 = optional(list(string))
+    })
+  })
+  default = null
+}
+
+variable "cdn_cache_policy" {
+  description = "Cache policy configuration for the CloudFront distribution."
+  type = object({
+    default_ttl                   = number
+    min_ttl                       = number
+    max_ttl                       = number
+    enable_accept_encoding_gzip   = bool
+    enable_accept_encoding_brotli = bool
+    cookies_config = object({
+      cookie_behavior = string
+      items           = optional(list(string))
+    })
+    headers_config = object({
+      header_behavior = string
+      items           = optional(list(string))
+    })
+    query_strings_config = object({
+      query_string_behavior = string
+      items                 = optional(list(string))
+    })
+  })
+  default = {
+    default_ttl                   = 0
+    min_ttl                       = 0
+    max_ttl                       = 31536000
+    enable_accept_encoding_brotli = true
+    enable_accept_encoding_gzip   = true
+    cookies_config = {
+      cookie_behavior = "none"
+      items           = []
+    }
+    headers_config = {
+      header_behavior = "whitelist"
+      items           = []
+    }
+    query_strings_config = {
+      query_string_behavior = "all"
+      items                 = []
+    }
+  }
+}
+
+variable "cdn_geo_restriction" {
+  description = "The georestriction configuration for the CloudFront distribution."
+  type = object({
+    restriction_type = string
+    locations        = list(string)
+  })
+  default = {
+    restriction_type = "none"
+    locations        = []
+  }
+}
+
+variable "cdn_remove_headers" {
+  description = "Response header removal configuration for the CloudFront distribution."
+  type = object({
+    items = list(string)
+  })
+  default = {
+    items = []
+  }
+}
+
+variable "cdn_create_invalidation_after_deployment" {
+  description = "Whether to create a CloudFront invalidation for all paths after deployment. This can be used to ensure that any changes to static assets are reflected immediately, but may increase deployment time and cost."
+  type        = bool
+  default     = true
+}
+
+# Lambda Functions
+
+variable "server_streaming" {
+  description = "Whether to enable response streaming on the server function. Enables faster Time to First Byte for server-rendered pages."
+  type        = bool
+  default     = false
+}
+
+variable "server_environment_variables" {
+  description = "Environment variables configured on the OpenNext server function."
+  type        = map(string)
+  default     = {}
+}
+
+variable "server_memory_size" {
+  description = "Memory size (in MB) for the OpenNext server function. This can be adjusted to improve performance based on the workload of your application."
+  type        = number
+  default     = 512
+}
+
+variable "server_iam_execution_policy_statements" {
+  description = "Additional IAM policy statements to attach to the OpenNext server function execution role. This can be used to grant permissions for accessing other AWS resources from the server function."
+  type = list(object({
+    effect    = string
+    actions   = list(string)
+    resources = list(string)
+  }))
+  default = []
+}
+
+variable "image_optimization_iam_execution_policy_statements" {
+  description = "Additional IAM policy statements to attach to the OpenNext image optimization function execution role. This can be used to grant permissions for accessing other AWS resources from the image optimization function."
+  type = list(object({
+    effect    = string
+    actions   = list(string)
+    resources = list(string)
+  }))
+  default = []
 }
 
 variable "warmer_function_enabled" {
@@ -100,28 +290,12 @@ variable "warmer_function_enabled" {
   default     = true
 }
 
-variable "static_paths" {
-  type        = list(string)
-  description = "List of static paths to be cached by CloudFront. These should correspond to the static assets generated by OpenNext."
-  default     = ["/llms.txt", "/llms-full.txt", "/.well-known/*"]
-}
+# Assets (S3)
 
-variable "enable_www_alias" {
+variable "use_account_regional_buckets" {
   type        = bool
-  description = "Whether to create an additional alias with the www prefix (e.g. www.example.com) and a corresponding Route 53 record if hosted_zone_id is provided."
+  description = "Whether S3 buckets should use account-regional namespace (BUCKET-ACCOUNTID-REGION-an) instead of global namespace. Account-regional is recommended to avoid naming conflicts."
   default     = true
-}
-
-variable "cdn_price_class" {
-  type        = string
-  description = "The CloudFront price class to use for the distribution. This determines the maximum price tier for serving content. Valid values are `PriceClass_100`, `PriceClass_200`, and `PriceClass_All`."
-  default     = "PriceClass_All"
-}
-
-variable "cache_pitr_enabled" {
-  type        = bool
-  description = "Whether to enable point-in-time recovery for the CloudFront cache DynamoDB table. This allows for recovery of cached data in the event of accidental deletion or other issues, but will incur additional cost."
-  default     = false
 }
 
 variable "upload_files" {
@@ -130,8 +304,37 @@ variable "upload_files" {
   default     = true
 }
 
-variable "tags" {
-  type        = map(string)
-  description = "Tags to apply to all resources."
-  default     = {}
+variable "replication_configuration" {
+  description = "Replication configuration for the assets S3 bucket."
+  default     = null
+  type = object({
+    role = string
+    rules = list(object({
+      id     = string
+      status = string
+      filters = list(object({
+        prefix = string
+      }))
+      destination = object({
+        bucket        = string
+        storage_class = string
+      })
+    }))
+  })
+}
+
+# Cache (DynamoDB)
+
+variable "cache_pitr_enabled" {
+  type        = bool
+  description = "Whether to enable point-in-time recovery for the CloudFront cache DynamoDB table. This allows for recovery of cached data in the event of accidental deletion or other issues, but will incur additional cost."
+  default     = false
+}
+
+# Revalidation Queue (SQS)
+
+variable "revalidation_queue_kms_key_arn" {
+  type        = string
+  description = "The ARN of an existing KMS key to use for encrypting the revalidation SQS queue. If null, a new KMS key will be created."
+  default     = null
 }

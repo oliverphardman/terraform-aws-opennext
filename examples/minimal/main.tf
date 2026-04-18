@@ -54,7 +54,7 @@ module "terranext" {
   version = "~> 1.0"
 
   name                = "My Website"
-  slug                = "my-website"
+  slug                = "MyWebsite"
   aws_region          = local.region
   opennext_build_path = "../.open-next"
   deployment_domain   = local.domain

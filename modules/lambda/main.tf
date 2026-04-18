@@ -1,9 +1,5 @@
-locals {
-  function_name = coalesce(var.function_name, var.slug)
-}
-
 resource "aws_cloudwatch_log_group" "this" {
-  name              = "/aws/lambda/${local.function_name}"
+  name              = "/aws/lambda/${var.function_name}"
   retention_in_days = 365
 
   tags = var.tags
@@ -13,7 +9,7 @@ resource "aws_lambda_function" "this" {
   filename         = data.archive_file.this.output_path
   source_code_hash = data.archive_file.this.output_base64sha256
 
-  function_name = local.function_name
+  function_name = var.function_name
   description   = var.description
 
   role = aws_iam_role.this.arn
@@ -42,13 +38,14 @@ resource "aws_lambda_function" "this" {
 }
 
 resource "aws_lambda_function_url" "this" {
+  count              = var.create_function_url ? 1 : 0
   function_name      = aws_lambda_function.this.function_name
   authorization_type = var.url_authorization_type
   invoke_mode        = var.streaming ? "RESPONSE_STREAM" : "BUFFERED"
 }
 
 resource "aws_lambda_permission" "this" {
-  count         = var.url_authorization_type == "NONE" ? 1 : 0
+  count         = var.create_function_url && var.url_authorization_type == "NONE" ? 1 : 0
   statement_id  = "FunctionURLAllowInvokeAction"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.this.function_name
@@ -56,7 +53,7 @@ resource "aws_lambda_permission" "this" {
 }
 
 resource "aws_lambda_permission" "this_url" {
-  count                  = var.url_authorization_type == "NONE" ? 1 : 0
+  count                  = var.create_function_url && var.url_authorization_type == "NONE" ? 1 : 0
   statement_id           = "FunctionURLAllowPublicAccess"
   function_name          = aws_lambda_function.this.function_name
   principal              = "*"

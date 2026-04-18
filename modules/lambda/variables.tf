@@ -1,8 +1,3 @@
-variable "slug" {
-  type        = string
-  description = "Prefix for created resource IDs"
-}
-
 variable "source_dir" {
   type        = string
   description = "The directory to use as the Lambda deployment package"
@@ -15,8 +10,7 @@ variable "output_dir" {
 
 variable "function_name" {
   type        = string
-  description = "The name of the Lambda function. Defaults to var.slug"
-  default     = null
+  description = "The name of the Lambda function."
 }
 
 variable "description" {
@@ -73,6 +67,12 @@ variable "iam_policy_statements" {
   }))
   description = "IAM policy statements to attach to the Lambda function role"
   default     = []
+}
+
+variable "create_function_url" {
+  type        = bool
+  description = "Whether to create a Lambda function URL"
+  default     = true
 }
 
 variable "streaming" {

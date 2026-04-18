@@ -5,7 +5,7 @@ output "lambda_function" {
 
 output "lambda_function_url" {
   description = "The Lambda Function URL resource"
-  value       = aws_lambda_function_url.this
+  value       = var.create_function_url ? aws_lambda_function_url.this[0] : null
 }
 
 output "lambda_role" {
