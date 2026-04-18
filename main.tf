@@ -50,7 +50,7 @@ module "revalidation_seeder" {
   source = "./modules/lambda"
 
   function_name       = "${var.slug}RevalidationSeeder"
-  description         = "Seeds the DynamoDB cache table with OpenNext revalidation data"
+  description         = "Seeds the DynamoDB cache table with OpenNext revalidation data for ${var.name}"
   memory_size         = 128
   timeout             = 900
   create_function_url = false
@@ -89,8 +89,8 @@ module "server_function" {
   source = "./modules/lambda"
 
   function_name = "${var.slug}NextJSServer"
-  description   = "Next.js Server"
-  memory_size   = 512
+  description   = "Next.js server for ${var.name}"
+  memory_size   = var.server_memory_size
   streaming     = var.server_streaming
 
   source_dir = "${local.opennext_root_build_path}/server-functions/default"
@@ -103,7 +103,7 @@ module "server_function" {
     CACHE_DYNAMO_TABLE        = aws_dynamodb_table.cache.name
     REVALIDATION_QUEUE_URL    = aws_sqs_queue.revalidation.url
     REVALIDATION_QUEUE_REGION = var.aws_region
-  }, var.runtime_environment_variables)
+  }, var.server_environment_variables)
 
   iam_policy_statements = concat([
     {
@@ -126,7 +126,7 @@ module "server_function" {
       actions   = ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem", "dynamodb:Query", "dynamodb:Scan", "dynamodb:BatchWriteItem"]
       resources = [aws_dynamodb_table.cache.arn, "${aws_dynamodb_table.cache.arn}/index/*"]
     }
-  ], var.runtime_iam_execution_policy_statements)
+  ], var.server_iam_execution_policy_statements)
 
   tags = var.tags
 }
@@ -135,7 +135,7 @@ module "image_optimization_function" {
   source = "./modules/lambda"
 
   function_name = "${var.slug}NextJSImageOptimization"
-  description   = "Next.js Image Optimization"
+  description   = "Next.js image optimization function for ${var.name}"
   memory_size   = 512
 
   source_dir = "${local.opennext_root_build_path}/image-optimization-function/"
@@ -161,7 +161,7 @@ module "revalidation_function" {
   source = "./modules/lambda"
 
   function_name = "${var.slug}NextJSRevalidation"
-  description   = "Next.js ISR Revalidation Function"
+  description   = "Next.js ISR revalidation function for ${var.name}"
   memory_size   = 128
 
   source_dir = "${local.opennext_root_build_path}/revalidation-function/"
@@ -205,7 +205,7 @@ module "warmer_function" {
   source = "./modules/lambda"
 
   function_name = "${var.slug}NextJSWarmer"
-  description   = "Next.js Warmer Function"
+  description   = "Warmer function for ${var.name}"
   memory_size   = 128
 
   source_dir = "${local.opennext_root_build_path}/warmer-function/"
