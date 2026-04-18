@@ -12,6 +12,8 @@ This module is based on the excellent work by [NHS England](https://github.com/o
 
 [TerraNext's website](https://terranext.dev) is hosted using TerraNext! Feel free to explore the [source code](https://github.com/TerraNext-Dev/terranext-site).
 
+> Upgrading from v2? Check the [Migration Guide](./docs/V3-MIGRATION.MD) for info on breaking changes.
+
 ## Quick Start
 
 1. Build your app with OpenNext
