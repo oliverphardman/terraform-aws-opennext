@@ -19,7 +19,7 @@ locals {
 }
 
 resource "aws_s3_bucket" "this" {
-  bucket           = var.use_account_regional_buckets ? "${var.slug}-assets-${var.aws_account_id}-${var.aws_region}-an" : "${var.slug}-assets"
+  bucket           = var.use_account_regional_buckets ? "${lower(var.slug)}-assets-${var.aws_account_id}-${var.aws_region}-an" : "${lower(var.slug)}-assets"
   bucket_namespace = var.use_account_regional_buckets ? "account-regional" : "global"
   force_destroy    = true
 }
@@ -121,7 +121,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "this" {
 }
 
 resource "aws_cloudfront_origin_access_control" "this" {
-  name                              = "${var.slug}-assets-oac"
+  name                              = "${var.slug}AssetsOAC"
   description                       = "CloudFront OAC for Assets S3 Bucket"
   origin_access_control_origin_type = "s3"
   signing_behavior                  = "always"

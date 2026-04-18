@@ -1,7 +1,7 @@
 locals {
-  server_origin_id             = "${var.slug}-server-origin"
-  assets_origin_id             = "${var.slug}-assets-origin"
-  image_optimization_origin_id = "${var.slug}-image-optimization-origin"
+  server_origin_id             = "${var.slug}ServerOrigin"
+  assets_origin_id             = "${var.slug}AssetsOrigin"
+  image_optimization_origin_id = "${var.slug}ImageOptimizationOrigin"
 }
 
 resource "aws_cloudfront_function" "this" {
@@ -151,7 +151,7 @@ resource "aws_cloudfront_cache_policy" "this" {
 
 resource "aws_cloudfront_response_headers_policy" "this" {
   name    = "${var.slug}ResponseHeadersPolicy"
-  comment = "${var.slug} Response Headers Policy"
+  comment = "${var.name} Response Headers Policy"
 
   cors_config {
     origin_override                  = var.cors.origin_override
@@ -409,7 +409,7 @@ resource "aws_cloudfront_distribution" "this" {
 }
 
 resource "aws_s3_bucket" "log" {
-  bucket           = "${var.slug}-logs-${var.aws_account_id}-${var.aws_region}-an"
+  bucket           = "${lower(var.slug)}-logs-${var.aws_account_id}-${var.aws_region}-an"
   bucket_namespace = "account-regional"
   force_destroy    = true
 

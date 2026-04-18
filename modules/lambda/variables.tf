@@ -1,6 +1,6 @@
 variable "slug" {
   type        = string
-  description = "Prefix for created resource IDs"
+  description = "Prefix for created resource IDs [DEPRECATED - use function_name instead]"
 }
 
 variable "source_dir" {
@@ -15,8 +15,7 @@ variable "output_dir" {
 
 variable "function_name" {
   type        = string
-  description = "The name of the Lambda function. Defaults to var.slug"
-  default     = null
+  description = "The name of the Lambda function."
 }
 
 variable "description" {

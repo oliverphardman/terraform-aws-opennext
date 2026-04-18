@@ -1,9 +1,5 @@
-locals {
-  function_name = coalesce(var.function_name, var.slug)
-}
-
 resource "aws_cloudwatch_log_group" "this" {
-  name              = "/aws/lambda/${local.function_name}"
+  name              = "/aws/lambda/${var.function_name}"
   retention_in_days = 365
 
   tags = var.tags
@@ -13,7 +9,7 @@ resource "aws_lambda_function" "this" {
   filename         = data.archive_file.this.output_path
   source_code_hash = data.archive_file.this.output_base64sha256
 
-  function_name = local.function_name
+  function_name = var.function_name
   description   = var.description
 
   role = aws_iam_role.this.arn

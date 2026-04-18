@@ -6,7 +6,7 @@ data "archive_file" "this" {
 }
 
 resource "aws_cloudwatch_log_group" "this" {
-  name              = "/aws/lambda/${var.slug}-revalidation-seeder"
+  name              = "/aws/lambda/${var.slug}RevalidationSeeder"
   retention_in_days = 14
 
   tags = var.tags
@@ -61,7 +61,7 @@ resource "aws_lambda_function" "this" {
   filename         = data.archive_file.this.output_path
   source_code_hash = data.archive_file.this.output_base64sha256
 
-  function_name = "${var.slug}-revalidation-seeder"
+  function_name = "${var.slug}RevalidationSeeder"
   description   = "Seeds the DynamoDB cache table with OpenNext revalidation data"
 
   role = aws_iam_role.this.arn

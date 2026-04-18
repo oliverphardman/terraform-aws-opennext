@@ -7,7 +7,7 @@ data "aws_kms_key" "this" {
 resource "aws_kms_key" "this" {
   count = var.kms_key_arn == null ? 1 : 0
 
-  description             = "${var.slug} Revalidation SQS Queue KMS Key"
+  description             = "${var.name} Revalidation SQS Queue KMS Key"
   deletion_window_in_days = 10
 
   policy              = data.aws_iam_policy_document.this[0].json

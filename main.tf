@@ -77,10 +77,10 @@ module "revalidation_seeder" {
 module "server_function" {
   source = "./modules/lambda"
 
-  slug        = var.slug
-  description = "Next.js Server"
-  memory_size = 512
-  streaming   = var.server_streaming
+  function_name = "${var.slug}NextJSServer"
+  description   = "Next.js Server"
+  memory_size   = 512
+  streaming     = var.server_streaming
 
   source_dir = "${local.opennext_root_build_path}/server-functions/default"
   output_dir = "${local.opennext_root_build_path}/.build/"
@@ -123,9 +123,9 @@ module "server_function" {
 module "image_optimization_function" {
   source = "./modules/lambda"
 
-  slug        = "${var.slug}-nextjs-image-optimization"
-  description = "Next.js Image Optimization"
-  memory_size = 512
+  function_name = "${var.slug}NextJSImageOptimization"
+  description   = "Next.js Image Optimization"
+  memory_size   = 512
 
   source_dir = "${local.opennext_root_build_path}/image-optimization-function/"
   output_dir = "${local.opennext_root_build_path}/.build/"
@@ -149,9 +149,9 @@ module "image_optimization_function" {
 module "revalidation_function" {
   source = "./modules/lambda"
 
-  slug        = "${var.slug}-nextjs-revalidation"
-  description = "Next.js ISR Revalidation Function"
-  memory_size = 128
+  function_name = "${var.slug}NextJSRevalidation"
+  description   = "Next.js ISR Revalidation Function"
+  memory_size   = 128
 
   source_dir = "${local.opennext_root_build_path}/revalidation-function/"
   output_dir = "${local.opennext_root_build_path}/.build/"
@@ -192,7 +192,7 @@ module "revalidation_function" {
 module "revalidation_queue" {
   source = "./modules/revalidation-queue"
 
-  slug = "${var.slug}-revalidation-queue"
+  slug = "${var.slug}NextJSRevalidationQueue"
 
   aws_account_id            = data.aws_caller_identity.current.account_id
   revalidation_function_arn = module.revalidation_function.lambda_function.arn
@@ -204,9 +204,9 @@ module "warmer_function" {
   count  = var.warmer_function_enabled ? 1 : 0
   source = "./modules/lambda"
 
-  slug        = "${var.slug}-nextjs-warmer"
-  description = "Next.js Warmer Function"
-  memory_size = 128
+  function_name = "${var.slug}NextJSWarmer"
+  description   = "Next.js Warmer Function"
+  memory_size   = 128
 
   source_dir = "${local.opennext_root_build_path}/warmer-function/"
   output_dir = "${local.opennext_root_build_path}/.build/"
@@ -234,7 +234,7 @@ module "warmer_function" {
 resource "aws_cloudwatch_event_rule" "warmer" {
   count = var.warmer_function_enabled ? 1 : 0
 
-  name                = "${var.slug}WarmerScheduledRule"
+  name                = "${var.slug}NextJSWarmerScheduledRule"
   schedule_expression = "rate(5 minutes)"
 
   tags = var.tags

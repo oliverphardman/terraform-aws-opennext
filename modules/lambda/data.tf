@@ -2,7 +2,7 @@ data "archive_file" "this" {
   type = "zip"
 
   source_dir  = var.source_dir
-  output_path = "${var.output_dir}${var.slug}.zip"
+  output_path = "${var.output_dir}${var.function_name}.zip"
 
   depends_on = [data.external.this]
 }

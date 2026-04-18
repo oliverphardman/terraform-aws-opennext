@@ -11,7 +11,7 @@ data "aws_iam_policy_document" "assume_role" {
 }
 
 resource "aws_iam_role" "this" {
-  name               = "${var.slug}Role"
+  name               = "${var.function_name}Role"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 
   tags = var.tags
@@ -36,7 +36,7 @@ data "aws_iam_policy_document" "permission" {
 }
 
 resource "aws_iam_policy" "this" {
-  name   = "${var.slug}Policy"
+  name   = "${var.function_name}Policy"
   policy = data.aws_iam_policy_document.permission.json
 
   tags = var.tags
