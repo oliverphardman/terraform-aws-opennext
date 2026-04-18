@@ -1,8 +1,3 @@
-variable "slug" {
-  type        = string
-  description = "Prefix for created resource IDs [DEPRECATED - use function_name instead]"
-}
-
 variable "source_dir" {
   type        = string
   description = "The directory to use as the Lambda deployment package"

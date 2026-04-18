@@ -3,7 +3,7 @@ variable "slug" {
   description = "Prefix for created resource IDs"
 }
 
-variable "name" {
+variable "app_name" {
   type        = string
   description = "The name of the CloudFront distribution"
 }

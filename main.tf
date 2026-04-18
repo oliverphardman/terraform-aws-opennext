@@ -192,7 +192,8 @@ module "revalidation_function" {
 module "revalidation_queue" {
   source = "./modules/revalidation-queue"
 
-  slug = "${var.slug}NextJSRevalidationQueue"
+  app_name = var.name
+  slug     = var.slug
 
   aws_account_id            = data.aws_caller_identity.current.account_id
   revalidation_function_arn = module.revalidation_function.lambda_function.arn
@@ -263,7 +264,7 @@ module "cloudfront" {
   aws_account_id = data.aws_caller_identity.current.account_id
   aws_region     = var.aws_region
 
-  name                            = var.name
+  app_name                        = var.name
   aliases                         = var.enable_www_alias ? [var.deployment_domain, "www.${var.deployment_domain}"] : [var.deployment_domain]
   acm_certificate_arn             = var.acm_arn
   assets_paths                    = var.static_paths

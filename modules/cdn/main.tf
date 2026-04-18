@@ -151,7 +151,7 @@ resource "aws_cloudfront_cache_policy" "this" {
 
 resource "aws_cloudfront_response_headers_policy" "this" {
   name    = "${var.slug}ResponseHeadersPolicy"
-  comment = "${var.name} Response Headers Policy"
+  comment = "${var.app_name} Response Headers Policy"
 
   cors_config {
     origin_override                  = var.cors.origin_override
@@ -214,7 +214,7 @@ resource "aws_cloudfront_distribution" "this" {
   price_class     = var.price_class
   enabled         = true
   is_ipv6_enabled = true
-  comment         = var.name
+  comment         = var.app_name
   aliases         = var.aliases
   web_acl_id      = try(var.custom_waf.arn, null)
   http_version    = "http2and3"
@@ -403,7 +403,7 @@ resource "aws_cloudfront_distribution" "this" {
   tags = merge(
     var.tags,
     {
-      Name = var.name
+      Name = var.app_name
     }
   )
 }

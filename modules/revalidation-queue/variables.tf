@@ -1,3 +1,8 @@
+variable "app_name" {
+  type        = string
+  description = "Name of your application"
+}
+
 variable "slug" {
   type        = string
   description = "Prefix for created resource IDs"
