@@ -475,3 +475,23 @@ resource "aws_route53_record" "cdn_aaaa" {
     evaluate_target_health = true
   }
 }
+
+action "aws_cloudfront_create_invalidation" "aws_cloudfront" {
+  description = "Creates a CloudFront invalidation for all paths to ensure that any changes to static assets are reflected immediately after deployment. This action is triggered automatically after deployment if cdn_create_invalidation_after_deployment is set to true."
+  config {
+    distribution_id = aws_cloudfront_distribution.cdn.id
+    paths           = ["/*"]
+  }
+}
+
+resource "terraform_data" "deploy_complete" {
+  lifecycle {
+    action_trigger {
+      events    = [before_create, before_update]
+      condition = var.cdn_create_invalidation_after_deployment
+      actions   = [action.aws_cloudfront_create_invalidation.aws_cloudfront]
+    }
+  }
+
+  depends_on = [aws_s3_object.assets]
+}
