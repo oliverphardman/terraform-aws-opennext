@@ -1,10 +1,10 @@
 variable "name" {
-  description = "The name of the application, used as a suffix for resources."
+  description = "The name of the application."
   type        = string
 }
 
 variable "slug" {
-  description = "The slug for the application, used as a prefix for resources."
+  description = "The slug for the application in PascalCase."
   type        = string
 }
 
