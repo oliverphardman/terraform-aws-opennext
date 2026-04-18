@@ -477,7 +477,6 @@ resource "aws_route53_record" "cdn_aaaa" {
 }
 
 action "aws_cloudfront_create_invalidation" "aws_cloudfront" {
-  description = "Creates a CloudFront invalidation for all paths to ensure that any changes to static assets are reflected immediately after deployment. This action is triggered automatically after deployment if cdn_create_invalidation_after_deployment is set to true."
   config {
     distribution_id = aws_cloudfront_distribution.cdn.id
     paths           = ["/*"]
