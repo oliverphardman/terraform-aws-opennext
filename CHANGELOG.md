@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/TerraNext-Dev/terraform-aws-opennext/compare/v3.0.0...v3.1.0) (2026-04-19)
+
+
+### Features
+
+* CDN invalidation now occurs on asset diff detection ([#30](https://github.com/TerraNext-Dev/terraform-aws-opennext/issues/30)) ([de348e2](https://github.com/TerraNext-Dev/terraform-aws-opennext/commit/de348e2bbf728bcae35727b2cdc58f01d4b64726))
+
 ## [3.0.0](https://github.com/TerraNext-Dev/terraform-aws-opennext/compare/v2.1.0...v3.0.0) (2026-04-18)
 
 
