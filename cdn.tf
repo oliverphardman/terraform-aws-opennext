@@ -484,6 +484,11 @@ action "aws_cloudfront_create_invalidation" "aws_cloudfront" {
 }
 
 resource "terraform_data" "deploy_complete" {
+  triggers_replace = var.upload_files ? sha256(join(",", [
+    for f in sort(fileset("${local.opennext_root_build_path}/assets", "**")) :
+    "${f}:${filemd5("${local.opennext_root_build_path}/assets/${f}")}"
+  ])) : null
+
   lifecycle {
     action_trigger {
       events    = [before_create, before_update]
